@@ -14,7 +14,6 @@ interface StageSelectScreenProps {
 }
 
 const StageSelectScreen: React.FC<StageSelectScreenProps> = ({
-  onNavigate,
   onStartStage,
   currentScreen = "stageSelect",
 }) => {

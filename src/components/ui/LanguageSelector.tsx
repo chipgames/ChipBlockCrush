@@ -1,7 +1,6 @@
 import React, { memo } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { SUPPORTED_LANGUAGES, LANGUAGE_NAMES } from "@/constants/languages";
-import type { SupportedLanguage } from "@/constants/languages";
 
 const LanguageSelector: React.FC = memo(() => {
   const { language, setLanguage } = useLanguage();

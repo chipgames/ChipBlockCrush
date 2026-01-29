@@ -11,8 +11,6 @@ import { getBlockColor } from "@/constants/blockShapes";
 import { getColorIndexFromCell } from "@/utils/gameLogic";
 import "./BlockCrushCanvas.css";
 
-const GRID_SIZE = 9;
-
 export interface BlockCrushCanvasHandle {
   getCellFromPoint: (
     clientX: number,
