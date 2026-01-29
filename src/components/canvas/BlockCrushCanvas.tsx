@@ -18,6 +18,7 @@ export interface BlockCrushCanvasHandle {
     clientX: number,
     clientY: number,
   ) => { row: number; col: number } | null;
+  getCellSize: () => number;
 }
 
 export interface PreviewBlock {
@@ -40,6 +41,7 @@ interface BlockCrushCanvasProps extends BlockCrushCanvasUIProps {
   grid: GridCell[][];
   onCellClick?: (row: number, col: number) => void;
   preview?: PreviewBlock | null;
+  onLayout?: (layout: { cellSize: number }) => void;
 }
 
 const BlockCrushCanvas = forwardRef<
@@ -57,6 +59,7 @@ const BlockCrushCanvas = forwardRef<
       backLabel,
       placeHintLabel,
       blockTrayContent,
+      onLayout,
     },
     ref,
   ) => {
@@ -86,6 +89,9 @@ const BlockCrushCanvas = forwardRef<
           if (row >= 0 && row < n && col >= 0 && col < n) return { row, col };
           return null;
         },
+        getCellSize() {
+          return layoutRef.current?.cellSize ?? 24;
+        },
       }),
       [],
     );
@@ -106,6 +112,7 @@ const BlockCrushCanvas = forwardRef<
           gridSize,
           padding,
         };
+        onLayout?.({ cellSize });
 
         const gridPixelW = cellSize * gridSize;
         const gridPixelH = cellSize * gridSize;

@@ -63,6 +63,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
     col: number;
   } | null>(null);
   const [dragPos, setDragPos] = useState<{ x: number; y: number } | null>(null);
+  const [gridCellSize, setGridCellSize] = useState(28);
   const previewCellRef = useRef<{ row: number; col: number } | null>(null);
   const draggingRef = useRef<{
     index: number;
@@ -289,6 +290,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
               grid={grid}
               onCellClick={handleCellClick}
               preview={preview}
+              onLayout={(layout) => setGridCellSize(layout.cellSize)}
               score={score}
               scoreLabel={t("game.score")}
               onBack={onBack}
@@ -335,7 +337,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
           <BlockPreview
             shape={dragging.shape}
             colorIndex={dragging.shapeIdx}
-            size={28}
+            size={gridCellSize}
           />
         </div>
       )}
