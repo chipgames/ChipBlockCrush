@@ -79,6 +79,39 @@ export function getShapeCenter(shape: BlockShape): {
   };
 }
 
+/** 커서(목표 셀)에 가장 가까운 유효한 배치 위치 — 스냅용, 검색 반경 2칸 */
+const SNAP_RADIUS = 2;
+
+export function getNearestValidPlacement(
+  grid: GridCell[][],
+  shape: BlockShape,
+  targetRow: number,
+  targetCol: number,
+): { row: number; col: number } | null {
+  const center = getShapeCenter(shape);
+  const baseR = targetRow - center.row;
+  const baseC = targetCol - center.col;
+  let best: { row: number; col: number } | null = null;
+  let bestDist = Infinity;
+
+  for (let dr = -SNAP_RADIUS; dr <= SNAP_RADIUS; dr++) {
+    for (let dc = -SNAP_RADIUS; dc <= SNAP_RADIUS; dc++) {
+      const r = baseR + dr;
+      const c = baseC + dc;
+      if (!canPlace(grid, shape, r, c)) continue;
+      const blockCenterR = r + center.row;
+      const blockCenterC = c + center.col;
+      const dist =
+        Math.abs(blockCenterR - targetRow) + Math.abs(blockCenterC - targetCol);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = { row: r, col: c };
+      }
+    }
+  }
+  return best;
+}
+
 export function getFullRowsAndCols(grid: GridCell[][]): {
   rows: number[];
   cols: number[];

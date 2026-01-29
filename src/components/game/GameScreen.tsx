@@ -20,6 +20,7 @@ import {
   canPlaceAny,
   getBlockShapeByIndex,
   getShapeCenter,
+  getNearestValidPlacement,
 } from "@/utils/gameLogic";
 import { GRID_SIZE, BLOCKS_PER_ROUND } from "@/constants/gameConfig";
 import {
@@ -66,6 +67,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
   const [dragPos, setDragPos] = useState<{ x: number; y: number } | null>(null);
   const [gridCellSize, setGridCellSize] = useState(28);
   const previewCellRef = useRef<{ row: number; col: number } | null>(null);
+  const lastCellRef = useRef<{ row: number; col: number } | null>(null);
   const draggingRef = useRef<{
     index: number;
     shapeIdx: number;
@@ -192,12 +194,16 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
       if (d) {
         const cell = canvasRef.current?.getCellFromPoint(clientX, clientY);
         if (cell) {
+          lastCellRef.current = cell;
           const center = getShapeCenter(d.shape);
           const placeRow = cell.row - center.row;
           const placeCol = cell.col - center.col;
-          if (canPlace(grid, d.shape, placeRow, placeCol)) {
-            setPreviewCell({ row: placeRow, col: placeCol });
-            previewCellRef.current = { row: placeRow, col: placeCol };
+          let snap = canPlace(grid, d.shape, placeRow, placeCol)
+            ? { row: placeRow, col: placeCol }
+            : getNearestValidPlacement(grid, d.shape, cell.row, cell.col);
+          if (snap) {
+            setPreviewCell(snap);
+            previewCellRef.current = snap;
           } else {
             setPreviewCell(null);
             previewCellRef.current = null;
@@ -218,8 +224,20 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
     const onEnd = () => {
       const pc = previewCellRef.current;
       const d = draggingRef.current;
-      if (d && pc && canPlace(grid, d.shape, pc.row, pc.col)) {
-        placeBlockAt(pc.row, pc.col, d.index);
+      const lastCell = lastCellRef.current;
+      if (d) {
+        let place =
+          pc && canPlace(grid, d.shape, pc.row, pc.col)
+            ? pc
+            : lastCell
+              ? getNearestValidPlacement(
+                  grid,
+                  d.shape,
+                  lastCell.row,
+                  lastCell.col,
+                )
+              : null;
+        if (place) placeBlockAt(place.row, place.col, d.index);
       }
       const startIdx = dragStartRef.current?.index;
       if (!d && startIdx !== undefined) {
@@ -230,6 +248,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
       setPreviewCell(null);
       setDragPos(null);
       previewCellRef.current = null;
+      lastCellRef.current = null;
       draggingRef.current = null;
       dragStartRef.current = null;
     };
