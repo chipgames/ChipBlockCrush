@@ -55,6 +55,30 @@ export function getColorIndexFromCell(cellValue: number): number {
   return cellValue > 0 ? cellValue & COLOR_BITS : 0;
 }
 
+/** 도형의 중심(채워진 셀들의 무게중심) — 드래그 시 커서=중심으로 배치할 때 사용 */
+export function getShapeCenter(shape: BlockShape): {
+  row: number;
+  col: number;
+} {
+  let sumR = 0;
+  let sumC = 0;
+  let count = 0;
+  for (let r = 0; r < shape.length; r++) {
+    for (let c = 0; c < (shape[0]?.length ?? 0); c++) {
+      if (shape[r][c]) {
+        sumR += r;
+        sumC += c;
+        count++;
+      }
+    }
+  }
+  if (count === 0) return { row: 0, col: 0 };
+  return {
+    row: Math.floor(sumR / count),
+    col: Math.floor(sumC / count),
+  };
+}
+
 export function getFullRowsAndCols(grid: GridCell[][]): {
   rows: number[];
   cols: number[];

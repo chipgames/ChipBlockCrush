@@ -19,6 +19,7 @@ import {
   computeScore,
   canPlaceAny,
   getBlockShapeByIndex,
+  getShapeCenter,
 } from "@/utils/gameLogic";
 import { GRID_SIZE, BLOCKS_PER_ROUND } from "@/constants/gameConfig";
 import {
@@ -190,9 +191,17 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
       const d = draggingRef.current;
       if (d) {
         const cell = canvasRef.current?.getCellFromPoint(clientX, clientY);
-        if (cell && canPlace(grid, d.shape, cell.row, cell.col)) {
-          setPreviewCell(cell);
-          previewCellRef.current = cell;
+        if (cell) {
+          const center = getShapeCenter(d.shape);
+          const placeRow = cell.row - center.row;
+          const placeCol = cell.col - center.col;
+          if (canPlace(grid, d.shape, placeRow, placeCol)) {
+            setPreviewCell({ row: placeRow, col: placeCol });
+            previewCellRef.current = { row: placeRow, col: placeCol };
+          } else {
+            setPreviewCell(null);
+            previewCellRef.current = null;
+          }
         } else {
           setPreviewCell(null);
           previewCellRef.current = null;
