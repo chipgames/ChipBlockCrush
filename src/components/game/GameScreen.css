@@ -25,6 +25,8 @@
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--border-color);
+  /* 캔버스 크기에 비례해 점수·메뉴·블록선택 스케일 */
+  font-size: clamp(10px, 1.75vw, 16px);
 }
 
 .game-canvas-box {
@@ -34,15 +36,11 @@
   min-height: 0;
 }
 
-.game-canvas-inner {
-  position: absolute;
-  inset: 0;
-}
-
-.game-canvas-inner .block-crush-canvas-wrap {
+.game-canvas-box .block-crush-canvas-wrap {
   width: 100%;
   height: 100%;
   max-width: none;
+  aspect-ratio: none;
   margin: 0;
 }
 
@@ -56,32 +54,34 @@
 }
 
 .game-ui-left {
-  top: 10px;
-  left: 10px;
+  top: 2%;
+  left: 2%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
-  padding: 8px 12px;
+  gap: 0.4em;
+  padding: 0.5em 0.75em;
   background: var(--bg-card);
-  border-radius: 10px;
+  border-radius: 0.6em;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-md);
 }
 
 .game-block-tray {
-  top: 10px;
-  right: 10px;
+  top: 2%;
+  right: 2%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  width: 88px;
-  padding: 8px;
+  gap: 0.4em;
+  width: 18%;
+  min-width: 4.5em;
+  max-width: 6em;
+  padding: 0.5em;
   background: var(--bg-glass);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border-radius: 10px;
+  border-radius: 0.6em;
   border: 1px solid var(--border-color);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
@@ -89,17 +89,17 @@
 .game-score {
   font-weight: 600;
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: 1em;
 }
 
 .game-back-btn {
-  padding: 8px 16px;
+  padding: 0.45em 0.9em;
   background: var(--bg-glass);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
+  border-radius: 0.6em;
   color: var(--text-primary);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.9em;
   transition:
     background 0.2s,
     border-color 0.2s;
@@ -116,14 +116,14 @@
 }
 
 .game-blocks-label {
-  font-size: 0.85rem;
+  font-size: 0.85em;
   color: var(--text-secondary);
-  margin-bottom: 4px;
+  margin-bottom: 0.2em;
   text-align: center;
 }
 
 .game-block-tray .game-blocks-label {
-  font-size: 0.7rem;
+  font-size: 0.7em;
   line-height: 1.2;
   text-align: center;
 }
@@ -138,16 +138,22 @@
 
 .game-block-tray .game-blocks-row {
   flex-direction: column;
-  gap: 8px;
+  gap: 0.4em;
   align-items: center;
 }
 
 .game-block-tray .game-block-preview {
-  padding: 6px;
+  padding: 0.35em;
   background: transparent;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 0.5em;
   box-shadow: none;
+}
+
+.game-block-tray .block-preview-svg {
+  width: 1.75em;
+  height: auto;
+  max-width: 100%;
 }
 
 .game-block-tray .game-block-preview:hover:not(:disabled) {
@@ -273,17 +279,8 @@
 }
 
 @media (max-width: 640px) {
-  .game-ui-left {
-    top: 6px;
-    left: 6px;
-    padding: 6px 10px;
-  }
-
-  .game-block-tray {
-    top: 6px;
-    right: 6px;
-    width: 80px;
-    padding: 6px;
+  .game-view-16-9 {
+    font-size: clamp(9px, 2.2vw, 14px);
   }
 
   .game-block-tray .game-blocks-row {

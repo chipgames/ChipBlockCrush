@@ -1,4 +1,5 @@
 .block-crush-canvas-wrap {
+  position: relative;
   width: 100%;
   height: 100%;
   max-width: min(90vw, 800px);
@@ -9,7 +10,7 @@
   margin: 0 auto;
 }
 
-.game-canvas-inner .block-crush-canvas-wrap {
+.game-canvas-box .block-crush-canvas-wrap {
   max-width: none;
   aspect-ratio: none;
 }

@@ -284,57 +284,44 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
       <div className={`game-area ${isGameOver ? "game-over" : ""}`}>
         <div className="game-view-16-9">
           <div className="game-canvas-box">
-            <div className="game-canvas-inner">
-              <BlockCrushCanvas
-                ref={canvasRef}
-                grid={grid}
-                onCellClick={handleCellClick}
-                preview={preview}
-              />
-            </div>
-            <div className="game-ui-overlay game-ui-left">
-              <button type="button" className="game-back-btn" onClick={onBack}>
-                {t("game.backToStage")}
-              </button>
-              <span className="game-score">
-                {t("game.score")}: {score}
-              </span>
-            </div>
-            <aside
-              className="game-ui-overlay game-block-tray"
-              aria-label={t("game.placeHint")}
-            >
-              <p className="game-blocks-label">{t("game.placeHint")}</p>
-              <div className="game-blocks-row">
-                {currentBlockIndices.map((shapeIdx, i) => {
-                  const shape = BLOCK_SHAPES[shapeIdx];
-                  const isSelected = selectedIndex === i;
-                  const isDraggingThis = dragging?.index === i;
-                  if (!shape) return null;
-                  return (
-                    <div
-                      key={`${shapeIdx}-${i}`}
-                      className={`game-block-preview ${isSelected ? "selected" : ""} ${isDraggingThis ? "dragging" : ""}`}
-                      onMouseDown={(e) => handlePointerDown(e, i)}
-                      onTouchStart={(e) => handlePointerDown(e, i)}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (!dragging) setSelectedIndex(isSelected ? null : i);
-                      }}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          setSelectedIndex(isSelected ? null : i);
-                        }
-                      }}
-                    >
-                      <BlockPreview shape={shape} colorIndex={shapeIdx} />
-                    </div>
-                  );
-                })}
-              </div>
-            </aside>
+            <BlockCrushCanvas
+              ref={canvasRef}
+              grid={grid}
+              onCellClick={handleCellClick}
+              preview={preview}
+              score={score}
+              scoreLabel={t("game.score")}
+              onBack={onBack}
+              backLabel={t("game.backToStage")}
+              placeHintLabel={t("game.placeHint")}
+              blockTrayContent={currentBlockIndices.map((shapeIdx, i) => {
+                const shape = BLOCK_SHAPES[shapeIdx];
+                const isSelected = selectedIndex === i;
+                const isDraggingThis = dragging?.index === i;
+                if (!shape) return null;
+                return (
+                  <div
+                    key={`${shapeIdx}-${i}`}
+                    className={`game-block-preview ${isSelected ? "selected" : ""} ${isDraggingThis ? "dragging" : ""}`}
+                    onMouseDown={(e) => handlePointerDown(e, i)}
+                    onTouchStart={(e) => handlePointerDown(e, i)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (!dragging) setSelectedIndex(isSelected ? null : i);
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        setSelectedIndex(isSelected ? null : i);
+                      }
+                    }}
+                  >
+                    <BlockPreview shape={shape} colorIndex={shapeIdx} />
+                  </div>
+                );
+              })}
+            />
           </div>
         </div>
       </div>
