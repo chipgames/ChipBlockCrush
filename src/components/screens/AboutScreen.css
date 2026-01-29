@@ -1,0 +1,32 @@
+.about-screen {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.about-title {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.about-description {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.about-back {
+  padding: 12px 24px;
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.about-back:hover {
+  opacity: 0.9;
+}

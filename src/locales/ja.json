@@ -1,0 +1,55 @@
+{
+  "header": {
+    "logo": "CHIP GAMES",
+    "gameTitle": "ブロックパズルゲーム",
+    "playGame": "ゲーム",
+    "guide": "ガイド",
+    "help": "ヘルプ",
+    "about": "ゲーム紹介",
+    "soundOn": "サウンドON",
+    "soundOff": "サウンドOFF",
+    "lightMode": "ライトモード",
+    "darkMode": "ダークモード"
+  },
+  "menu": {
+    "subtitle": "ブロックを置いてラインを揃えよう"
+  },
+  "stageSelect": {
+    "title": "ステージ選択",
+    "page": "ページ"
+  },
+  "game": {
+    "score": "スコア",
+    "level": "レベル",
+    "gameOver": "ゲームオーバー",
+    "playAgain": "もう一度",
+    "backToStage": "メニューへ",
+    "placeHint": "ブロックを選んでマスをクリック"
+  },
+  "guide": {
+    "title": "ゲームガイド",
+    "description": "ChipBlockCrushはブロックをグリッドに置き、一行（横または縦）が揃うと消えるブロックパズルです。",
+    "step1": "渡されたブロックの一つを選び、ボードの空きマスにドラッグまたはタッチで置きます。",
+    "step2": "一行が揃うと自動で消え、スコアが入ります。",
+    "step3": "ブロックを置けなくなったらゲームオーバー。ラインを消して長く続けることが目標です。"
+  },
+  "help": {
+    "title": "ヘルプ",
+    "faq1": "Q: ブロックの置き方？ A: ブロックをクリック（タッチ）し、ボードの空きマスへドラッグして置きます。",
+    "faq2": "Q: スコアの上げ方？ A: 一行を揃えると消えます。複数行を一度に消すとボーナスが付きます。"
+  },
+  "about": {
+    "title": "ゲーム紹介",
+    "description": "ChipBlockCrushはCHIP GAMESの無料オンラインブロックパズルです。ブラウザでそのままプレイできます。"
+  },
+  "footer": {
+    "privacy": "プライバシーポリシー",
+    "contact": "お問い合わせ",
+    "copyright": "© 2026 ChipGames. All rights reserved."
+  },
+  "seo": {
+    "title": "ChipBlockCrush - ブロックパズルゲーム",
+    "description": "無料オンラインブロックパズル。ブロックを置いてラインを揃えよう！",
+    "keywords": "ブロックパズル, ChipBlockCrush, パズルゲーム, 無料ゲーム"
+  }
+}

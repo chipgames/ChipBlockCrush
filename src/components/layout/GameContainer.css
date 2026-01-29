@@ -1,0 +1,16 @@
+.game-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  overflow: auto;
+  min-height: 0;
+  padding: 12px;
+}
+
+@media (max-width: 768px) {
+  .game-container {
+    padding: 8px;
+  }
+}

@@ -1,0 +1,29 @@
+.block-crush-canvas-wrap {
+  width: 100%;
+  height: 100%;
+  max-width: min(90vw, 800px);
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.game-canvas-inner .block-crush-canvas-wrap {
+  max-width: none;
+  aspect-ratio: none;
+}
+
+.block-crush-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+}
+
+.block-crush-canvas:focus {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
