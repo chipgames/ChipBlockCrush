@@ -28,22 +28,31 @@ export function canPlace(
   return true;
 }
 
+/** 셀 값: 0 = 빈칸, 그 외 = (blockId << 4) | (colorIndex & 0xf) — 그리드 그리기 시 colorIndex로 색상 사용 */
+const COLOR_BITS = 0xf;
+
 export function placeBlock(
   grid: GridCell[][],
   shape: BlockShape,
   row: number,
   col: number,
   blockId: number,
+  colorIndex: number,
 ): GridCell[][] {
   const next = grid.map((row) => [...row]);
   const R = shape.length;
   const C = shape[0]?.length ?? 0;
+  const value = (blockId << 4) | (colorIndex & COLOR_BITS);
   for (let r = 0; r < R; r++) {
     for (let c = 0; c < C; c++) {
-      if (shape[r][c]) next[row + r][col + c] = blockId;
+      if (shape[r][c]) next[row + r][col + c] = value;
     }
   }
   return next;
+}
+
+export function getColorIndexFromCell(cellValue: number): number {
+  return cellValue > 0 ? cellValue & COLOR_BITS : 0;
 }
 
 export function getFullRowsAndCols(grid: GridCell[][]): {

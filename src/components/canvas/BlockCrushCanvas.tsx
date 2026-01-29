@@ -8,6 +8,7 @@ import React, {
 import type { GridCell } from "@/types/game";
 import { getCanvasSize } from "@/constants/canvasConfig";
 import { getBlockColor } from "@/constants/blockShapes";
+import { getColorIndexFromCell } from "@/utils/gameLogic";
 import "./BlockCrushCanvas.css";
 
 const GRID_SIZE = 9;
@@ -130,7 +131,7 @@ const BlockCrushCanvas = forwardRef<
           const y = offsetY + r * cellSize;
           const id = grid[r][c];
           if (id > 0) {
-            ctx.fillStyle = getBlockColor(id - 1);
+            ctx.fillStyle = getBlockColor(getColorIndexFromCell(id));
             ctx.fillRect(x + 2, y + 2, cellSize - 4, cellSize - 4);
             ctx.strokeStyle = "rgba(255,255,255,0.35)";
             ctx.lineWidth = 1;

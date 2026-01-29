@@ -100,7 +100,14 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
       const shape = getBlockShapeByIndex(shapeIdx);
       if (!shape || !canPlace(grid, shape, row, col)) return;
 
-      let nextGrid = placeBlock(grid, shape, row, col, blockIdCounter);
+      let nextGrid = placeBlock(
+        grid,
+        shape,
+        row,
+        col,
+        blockIdCounter,
+        shapeIdx,
+      );
       setBlockIdCounter((c) => c + 1);
 
       let totalCleared = 0;
