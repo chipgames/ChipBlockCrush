@@ -1,6 +1,9 @@
 const CACHE_NAME = "chipblockcrush-v__BUILD_VERSION__";
 
 self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.add(self.registration.scope)),
+  );
   self.skipWaiting();
 });
 
@@ -20,12 +23,33 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
   event.respondWith(
-    fetch(event.request).catch(() =>
-      caches.match(event.request).then((cached) => {
-        if (cached) return cached;
-        return new Response(null, { status: 504, statusText: "Offline" });
-      }),
-    ),
+    fetch(event.request)
+      .then((response) => {
+        if (!response || response.status !== 200 || response.type !== "basic")
+          return response;
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          try {
+            cache.put(event.request, clone);
+          } catch (_) {}
+        });
+        return response;
+      })
+      .catch(() =>
+        caches.match(event.request).then((cached) => {
+          if (cached) return cached;
+          if (event.request.mode === "navigate")
+            return caches
+              .match(self.registration.scope)
+              .then(
+                (r) =>
+                  r ||
+                  new Response(null, { status: 504, statusText: "Offline" }),
+              );
+          return new Response(null, { status: 504, statusText: "Offline" });
+        }),
+      ),
   );
 });

@@ -76,3 +76,55 @@
   background: var(--bg-tertiary);
   border-color: var(--border-hover);
 }
+
+.menu-link-download {
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.menu-link-download:hover {
+  background: var(--accent-primary);
+  color: #fff;
+  border-color: var(--accent-primary);
+}
+
+/* iOS 앱 설치 안내 오버레이 */
+.menu-ios-install-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.menu-ios-install-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 340px;
+  box-shadow: var(--shadow-lg);
+}
+
+.menu-ios-install-text {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+}
+
+.menu-ios-install-close {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}

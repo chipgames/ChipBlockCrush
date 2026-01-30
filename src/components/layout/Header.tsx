@@ -1,5 +1,6 @@
 import React, { useState, useEffect, memo } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
+import { usePWAInstall } from "@/hooks/usePWAInstall";
 import LanguageSelector from "@/components/ui/LanguageSelector";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { GameScreen } from "@/types/ui";
@@ -15,6 +16,8 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = memo(({ onNavigate, onStartGame }) => {
   const { t } = useLanguage();
+  const { canInstall, isIOS, isStandalone, promptInstall } = usePWAInstall();
+  const showDownload = !isStandalone;
   const [soundEnabled, setSoundEnabled] = useState<boolean>(
     () =>
       storageManager.get<boolean>("soundEnabled", {
@@ -44,6 +47,19 @@ const Header: React.FC<HeaderProps> = memo(({ onNavigate, onStartGame }) => {
   const toggleSound = () => {
     setSoundEnabled((v) => !v);
     if (soundEnabled) soundManager.playClick();
+  };
+
+  const handleDownload = async () => {
+    if (canInstall) {
+      await promptInstall();
+      setIsMobileMenuOpen(false);
+    } else if (isIOS) {
+      window.alert(t("menu.installInstructionsIOS"));
+      setIsMobileMenuOpen(false);
+    } else {
+      window.alert(t("menu.installInstructionsFallback"));
+      setIsMobileMenuOpen(false);
+    }
   };
 
   return (
@@ -80,6 +96,15 @@ const Header: React.FC<HeaderProps> = memo(({ onNavigate, onStartGame }) => {
           >
             {t("header.playGame")}
           </button>
+          {showDownload && (
+            <button
+              type="button"
+              className="header-nav-button header-nav-button-download"
+              onClick={handleDownload}
+            >
+              {t("header.download")}
+            </button>
+          )}
           <button
             type="button"
             className="header-nav-button"

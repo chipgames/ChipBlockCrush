@@ -15,10 +15,15 @@
     "orientationLandscape": "横屏锁定",
     "orientationPortrait": "竖屏锁定",
     "hideMenuFooter": "隐藏菜单和页脚",
-    "showMenuFooter": "显示菜单和页脚"
+    "showMenuFooter": "显示菜单和页脚",
+    "download": "下载",
+    "installApp": "安装应用"
   },
   "menu": {
-    "subtitle": "放置方块，消除整行"
+    "subtitle": "放置方块，消除整行",
+    "installInstructionsIOS": "在 Safari 中点击分享按钮(□↑)，然后选择「添加到主屏幕」。",
+    "installInstructionsFallback": "手机：在浏览器菜单中选择「安装应用」或「添加到主屏幕」。电脑 Chrome：点击地址栏右侧的安装(⊕)图标。",
+    "confirm": "确定"
   },
   "stageSelect": {
     "title": "选择关卡",

@@ -15,10 +15,15 @@
     "orientationLandscape": "가로 고정",
     "orientationPortrait": "세로 고정",
     "hideMenuFooter": "메뉴·푸터 숨기기",
-    "showMenuFooter": "메뉴·푸터 보기"
+    "showMenuFooter": "메뉴·푸터 보기",
+    "download": "다운로드",
+    "installApp": "앱 설치"
   },
   "menu": {
-    "subtitle": "블록을 배치하고 줄을 완성하세요"
+    "subtitle": "블록을 배치하고 줄을 완성하세요",
+    "installInstructionsIOS": "Safari에서 공유 버튼(□↑)을 누른 뒤 '홈 화면에 추가'를 선택하세요.",
+    "installInstructionsFallback": "모바일: 브라우저 메뉴에서 '앱 설치' 또는 '홈 화면에 추가'를 선택하세요. PC Chrome: 주소창 오른쪽의 설치(⊕) 아이콘을 클릭하세요.",
+    "confirm": "확인"
   },
   "stageSelect": {
     "title": "스테이지 선택",

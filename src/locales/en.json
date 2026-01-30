@@ -15,10 +15,15 @@
     "orientationLandscape": "Lock landscape",
     "orientationPortrait": "Lock portrait",
     "hideMenuFooter": "Hide menu & footer",
-    "showMenuFooter": "Show menu & footer"
+    "showMenuFooter": "Show menu & footer",
+    "download": "Download",
+    "installApp": "Install app"
   },
   "menu": {
-    "subtitle": "Place blocks and complete lines"
+    "subtitle": "Place blocks and complete lines",
+    "installInstructionsIOS": "In Safari, tap the Share button (□↑), then tap 'Add to Home Screen'.",
+    "installInstructionsFallback": "Mobile: Choose 'Install app' or 'Add to Home Screen' from your browser menu. PC Chrome: Click the install (⊕) icon on the right side of the address bar.",
+    "confirm": "OK"
   },
   "stageSelect": {
     "title": "Stage Selection",

@@ -15,10 +15,15 @@
     "orientationLandscape": "横向き固定",
     "orientationPortrait": "縦向き固定",
     "hideMenuFooter": "メニュー・フッターを隠す",
-    "showMenuFooter": "メニュー・フッターを表示"
+    "showMenuFooter": "メニュー・フッターを表示",
+    "download": "ダウンロード",
+    "installApp": "アプリをインストール"
   },
   "menu": {
-    "subtitle": "ブロックを置いてラインを揃えよう"
+    "subtitle": "ブロックを置いてラインを揃えよう",
+    "installInstructionsIOS": "Safariで共有ボタン(□↑)をタップし、「ホーム画面に追加」を選んでください。",
+    "installInstructionsFallback": "モバイル: ブラウザメニューで「アプリをインストール」または「ホーム画面に追加」を選んでください。PC Chrome: アドレスバー右のインストール(⊕)アイコンをクリックしてください。",
+    "confirm": "OK"
   },
   "stageSelect": {
     "title": "ステージ選択",
