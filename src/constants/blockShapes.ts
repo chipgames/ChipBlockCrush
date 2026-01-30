@@ -111,9 +111,9 @@ export const BLOCK_SHAPES: BlockShape[] = [
   ], // U 자
 ];
 
-/** 블록 색상 (파스텔) — 도형 개수만큼 순환 사용 */
+/** 블록 색상 (파스텔) — 블록 형태 27개별로 서로 다른 색 */
 export const BLOCK_COLORS = [
-  "#a8b5ff",
+  "#a8b5ff", // 0
   "#c5a3ff",
   "#ffb3e6",
   "#7fdfd4",
@@ -129,6 +129,18 @@ export const BLOCK_COLORS = [
   "#dda0dd",
   "#87ceeb",
   "#f0e68c",
+  "#c9a0dc", // 16
+  "#98d8aa",
+  "#f7dc6f",
+  "#bb8fce",
+  "#85c1e9",
+  "#f8b88b",
+  "#a3e4d7",
+  "#fadbd8",
+  "#aed6f1",
+  "#f9e79f",
+  "#d7bde2",
+  "#a2d9ce", // 26
 ];
 
 export function getRandomBlockId(seed: number): number {
