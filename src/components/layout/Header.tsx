@@ -96,15 +96,6 @@ const Header: React.FC<HeaderProps> = memo(({ onNavigate, onStartGame }) => {
           >
             {t("header.playGame")}
           </button>
-          {showDownload && (
-            <button
-              type="button"
-              className="header-nav-button header-nav-button-download"
-              onClick={handleDownload}
-            >
-              {t("header.download")}
-            </button>
-          )}
           <button
             type="button"
             className="header-nav-button"
@@ -126,6 +117,15 @@ const Header: React.FC<HeaderProps> = memo(({ onNavigate, onStartGame }) => {
           >
             {t("header.about")}
           </button>
+          {showDownload && (
+            <button
+              type="button"
+              className="header-nav-button header-nav-button-download"
+              onClick={handleDownload}
+            >
+              {t("header.download")}
+            </button>
+          )}
         </nav>
         <div className="header-right">
           <ThemeToggle />
