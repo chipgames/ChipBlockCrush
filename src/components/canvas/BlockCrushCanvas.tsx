@@ -29,6 +29,8 @@ export interface PreviewBlock {
 export interface BlockCrushCanvasUIProps {
   score?: number;
   scoreLabel?: string;
+  bestScore?: number;
+  bestScoreLabel?: string;
   onBack?: () => void;
   backLabel?: string;
   placeHintLabel?: string;
@@ -121,6 +123,8 @@ const BlockCrushCanvas = forwardRef<
       preview,
       score = 0,
       scoreLabel,
+      bestScore = 0,
+      bestScoreLabel,
       onBack,
       backLabel,
       placeHintLabel,
@@ -248,9 +252,10 @@ const BlockCrushCanvas = forwardRef<
           ctx.textAlign = "left";
         }
 
-        // 점수 (캔버스에 직접 그리기)
+        // 점수·최고 점수 (캔버스에 직접 그리기)
         const scoreX = menuRect.x + menuRect.w + padding;
         const scoreY = menuRect.y + menuRect.h / 2;
+        const lineHeight = fontSize + 2;
         ctx.textAlign = "left";
         ctx.fillStyle = textPrimary;
         ctx.fillText(
@@ -259,6 +264,14 @@ const BlockCrushCanvas = forwardRef<
           scoreY,
           width - scoreX - rightPanelWidth - padding,
         );
+        if (bestScoreLabel != null) {
+          ctx.fillText(
+            `${bestScoreLabel}: ${bestScore}`,
+            scoreX,
+            scoreY + lineHeight,
+            width - scoreX - rightPanelWidth - padding,
+          );
+        }
 
         // 블록 트레이 (캔버스에 직접 그리기)
         currentBlockIndices.forEach((shapeIdx, i) => {
@@ -369,6 +382,8 @@ const BlockCrushCanvas = forwardRef<
         preview,
         score,
         scoreLabel,
+        bestScore,
+        bestScoreLabel,
         backLabel,
         onBack,
         currentBlockIndices,

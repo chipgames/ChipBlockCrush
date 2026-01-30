@@ -26,6 +26,7 @@
   },
   "game": {
     "score": "점수",
+    "bestScore": "최고",
     "level": "레벨",
     "gameOver": "게임 오버",
     "playAgain": "다시 하기",

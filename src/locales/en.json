@@ -26,6 +26,7 @@
   },
   "game": {
     "score": "Score",
+    "bestScore": "Best",
     "level": "Level",
     "gameOver": "Game Over",
     "playAgain": "Play Again",

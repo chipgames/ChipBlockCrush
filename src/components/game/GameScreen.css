@@ -304,6 +304,13 @@
   color: var(--text-secondary);
 }
 
+.game-over-box p.game-over-best {
+  margin-bottom: 24px;
+  margin-top: -12px;
+  font-size: 0.95em;
+  color: var(--text-secondary);
+}
+
 .game-over-buttons {
   display: flex;
   gap: 12px;

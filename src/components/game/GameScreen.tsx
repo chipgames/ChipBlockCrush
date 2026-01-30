@@ -46,6 +46,8 @@ interface GameScreenProps {
 
 /** localStorage에 가로 모드 여부 저장할 때 사용하는 키 (접두어 제외) */
 const LANDSCAPE_MODE_KEY = "landscapeMode";
+/** localStorage에 최고 점수 저장할 때 사용하는 키 */
+const HIGH_SCORE_KEY = "highScore";
 
 const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
   const { t } = useLanguage();
@@ -64,6 +66,15 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   /** 누적 점수 */
   const [score, setScore] = useState(0);
+  /** 최고 점수 (localStorage에서 복원, 갱신 시 저장) */
+  const [bestScore, setBestScore] = useState<number>(() => {
+    if (typeof window === "undefined") return 0;
+    const v = storageManager.get<number>(HIGH_SCORE_KEY, {
+      fallback: 0,
+      silent: true,
+    });
+    return typeof v === "number" && v >= 0 ? v : 0;
+  });
   /** 게임 오버 여부 (더 이상 배치 불가 시 true) */
   const [isGameOver, setIsGameOver] = useState(false);
   /** 다음에 배치할 블록에 부여할 고유 ID (placeBlock 시 사용) */
@@ -179,6 +190,13 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
       setIsGameOver(true);
     }
   }, [grid, currentBlockIndices]);
+
+  /** 점수가 올라갈 때 최고 점수 갱신 및 저장 */
+  useEffect(() => {
+    if (score <= bestScore) return;
+    setBestScore(score);
+    storageManager.set(HIGH_SCORE_KEY, score, { silent: true });
+  }, [score, bestScore]);
 
   /**
    * 지정한 (row, col)에 blockIndex번 블록을 배치합니다.
@@ -424,6 +442,8 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
               onLayout={(layout) => setGridCellSize(layout.cellSize)}
               score={score}
               scoreLabel={t("game.score")}
+              bestScore={bestScore}
+              bestScoreLabel={t("game.bestScore")}
               onBack={onBack}
               backLabel={t("game.backToStage")}
               placeHintLabel={t("game.placeHint")}
@@ -489,6 +509,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
             <h2>{t("game.gameOver")}</h2>
             <p>
               {t("game.score")}: {score}
+            </p>
+            <p className="game-over-best">
+              {t("game.bestScore")}: {bestScore}
             </p>
             <div className="game-over-buttons">
               <button type="button" onClick={handlePlayAgain}>
