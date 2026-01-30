@@ -367,23 +367,32 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
       onMove(e.touches[0].clientX, e.touches[0].clientY);
     };
 
-    const onEnd = () => {
+    const onEnd = (releaseClientX?: number, releaseClientY?: number) => {
       const pc = previewCellRef.current;
       const d = draggingRef.current;
       const lastCell = lastCellRef.current;
       if (d) {
-        let place =
-          pc && canPlace(grid, d.shape, pc.row, pc.col)
-            ? pc
-            : lastCell
-              ? getNearestValidPlacement(
-                  grid,
-                  d.shape,
-                  lastCell.row,
-                  lastCell.col,
-                )
-              : null;
-        if (place) placeBlockAt(place.row, place.col, d.index);
+        const hasReleasePos = releaseClientX != null && releaseClientY != null;
+        const releaseOverGrid =
+          hasReleasePos &&
+          canvasRef.current?.getCellFromPoint(releaseClientX, releaseClientY) !=
+            null;
+        if (hasReleasePos && !releaseOverGrid) {
+          /* 놓은 위치가 그리드 밖이면 취소(배치 안 함) */
+        } else {
+          let place =
+            pc && canPlace(grid, d.shape, pc.row, pc.col)
+              ? pc
+              : lastCell
+                ? getNearestValidPlacement(
+                    grid,
+                    d.shape,
+                    lastCell.row,
+                    lastCell.col,
+                  )
+                : null;
+          if (place) placeBlockAt(place.row, place.col, d.index);
+        }
       }
       if (moveRafRef.current != null) {
         cancelAnimationFrame(moveRafRef.current);
@@ -400,16 +409,17 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
       dragStartRef.current = null;
     };
 
-    const onMouseUp = () => {
+    const onMouseUp = (e: MouseEvent) => {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
-      onEnd();
+      onEnd(e.clientX, e.clientY);
     };
 
-    const onTouchEnd = () => {
+    const onTouchEnd = (e: TouchEvent) => {
       window.removeEventListener("touchmove", onTouchMove, { capture: true });
       window.removeEventListener("touchend", onTouchEnd, { capture: true });
-      onEnd();
+      const touch = e.changedTouches[0];
+      onEnd(touch?.clientX, touch?.clientY);
     };
 
     window.addEventListener("mousemove", onMouseMove);
