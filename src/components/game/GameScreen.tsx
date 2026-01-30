@@ -135,6 +135,11 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
     shape: number[][];
   } | null>(null);
   const dragStartRef = useRef<{ index: number } | null>(null);
+  /** 드래그 고스트 DOM — 터치 이동 시 setState 대신 직접 위치 갱신해 끊김 감소 */
+  const ghostRef = useRef<HTMLDivElement | null>(null);
+  /** 그리드 스냅 계산 RAF 스로틀용 */
+  const moveRafRef = useRef<number | null>(null);
+  const pendingMoveRef = useRef<{ x: number; y: number } | null>(null);
 
   /** 이 거리 이상 움직였을 때만 “클릭”이 아니라 “드래그”로 인정 (px) */
   const DRAG_THRESHOLD = 8;
@@ -293,7 +298,13 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
     if (!dragStart && !dragging) return;
 
     const onMove = (clientX: number, clientY: number) => {
-      setDragPos({ x: clientX, y: clientY });
+      const d = draggingRef.current;
+      if (d && ghostRef.current) {
+        ghostRef.current.style.left = `${clientX}px`;
+        ghostRef.current.style.top = `${clientY}px`;
+      } else {
+        setDragPos({ x: clientX, y: clientY });
+      }
       if (dragStart && !dragging) {
         const dx = clientX - dragStart.x;
         const dy = clientY - dragStart.y;
@@ -307,29 +318,45 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
           draggingRef.current = newDrag;
           setDragStart(null);
           dragStartRef.current = null;
+          setDragPos({ x: clientX, y: clientY });
         }
       }
-      const d = draggingRef.current;
       if (d) {
-        const cell = canvasRef.current?.getCellFromPoint(clientX, clientY);
-        if (cell) {
-          lastCellRef.current = cell;
-          const center = getShapeCenter(d.shape);
-          const placeRow = cell.row - center.row;
-          const placeCol = cell.col - center.col;
-          let snap = canPlace(grid, d.shape, placeRow, placeCol)
-            ? { row: placeRow, col: placeCol }
-            : getNearestValidPlacement(grid, d.shape, cell.row, cell.col);
-          if (snap) {
-            setPreviewCell(snap);
-            previewCellRef.current = snap;
-          } else {
-            setPreviewCell(null);
-            previewCellRef.current = null;
-          }
-        } else {
-          setPreviewCell(null);
-          previewCellRef.current = null;
+        pendingMoveRef.current = { x: clientX, y: clientY };
+        if (moveRafRef.current == null) {
+          moveRafRef.current = requestAnimationFrame(() => {
+            moveRafRef.current = null;
+            const pos = pendingMoveRef.current;
+            const g = draggingRef.current;
+            if (!pos || !g) return;
+            const cell = canvasRef.current?.getCellFromPoint(pos.x, pos.y);
+            if (cell) {
+              lastCellRef.current = cell;
+              const center = getShapeCenter(g.shape);
+              const placeRow = cell.row - center.row;
+              const placeCol = cell.col - center.col;
+              const snap = canPlace(grid, g.shape, placeRow, placeCol)
+                ? { row: placeRow, col: placeCol }
+                : getNearestValidPlacement(grid, g.shape, cell.row, cell.col);
+              if (snap) {
+                const prev = previewCellRef.current;
+                if (!prev || prev.row !== snap.row || prev.col !== snap.col) {
+                  setPreviewCell(snap);
+                  previewCellRef.current = snap;
+                }
+              } else {
+                if (previewCellRef.current !== null) {
+                  setPreviewCell(null);
+                  previewCellRef.current = null;
+                }
+              }
+            } else {
+              if (previewCellRef.current !== null) {
+                setPreviewCell(null);
+                previewCellRef.current = null;
+              }
+            }
+          });
         }
       }
     };
@@ -358,6 +385,11 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
               : null;
         if (place) placeBlockAt(place.row, place.col, d.index);
       }
+      if (moveRafRef.current != null) {
+        cancelAnimationFrame(moveRafRef.current);
+        moveRafRef.current = null;
+      }
+      pendingMoveRef.current = null;
       setDragging(null);
       setDragStart(null);
       setPreviewCell(null);
@@ -489,6 +521,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
         typeof document !== "undefined" &&
         createPortal(
           <div
+            ref={ghostRef}
             className={`game-drag-ghost ${isLandscapeMode ? "landscape-mode" : ""}`}
             style={{ left: dragPos.x, top: dragPos.y }}
             aria-hidden
