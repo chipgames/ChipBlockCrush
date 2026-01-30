@@ -474,7 +474,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
     <div className="game-screen">
       {/* 가로 모드 시 rotate(90deg)로 전체 게임 영역 회전, 모바일에서만 */}
       <div
-        className={`game-board-container ${isLandscapeMode ? "landscape-mode" : ""}`}
+        className={`game-board-container ${isMobile && isLandscapeMode ? "landscape-mode" : ""}`}
       >
         <div className={`game-area ${isGameOver ? "game-over" : ""}`}>
           <div className="game-view-16-9">
@@ -496,7 +496,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
               selectedIndex={selectedIndex}
               onBlockTrayClick={handleBlockTrayClick}
               onBlockTrayPointerDown={handleBlockTrayPointerDown}
-              isLandscapeMode={isLandscapeMode}
+              isLandscapeMode={isMobile ? isLandscapeMode : false}
             />
           </div>
         </div>
@@ -535,7 +535,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
         createPortal(
           <div
             ref={ghostRef}
-            className={`game-drag-ghost ${isLandscapeMode ? "landscape-mode" : ""}`}
+            className={`game-drag-ghost ${isMobile && isLandscapeMode ? "landscape-mode" : ""}`}
             style={{ left: dragPos.x, top: dragPos.y }}
             aria-hidden
           >
