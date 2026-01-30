@@ -13,16 +13,42 @@ import SEOHead from "@/components/seo/SEOHead";
 import { GameScreen as GameScreenType } from "@/types/ui";
 import { useTheme } from "@/hooks/useTheme";
 import { registerServiceWorker } from "@/utils/serviceWorker";
+import { storageManager } from "@/utils/storage";
+import { useLanguage } from "@/hooks/useLanguage";
 import "@/styles/App.css";
 import "@/styles/themes.css";
+import "@/styles/OrientationLockButton.css";
+
+const ORIENTATION_LOCK_KEY = "chipBlockCrush_orientationLocked";
 
 const App: React.FC = () => {
   useTheme();
+  const { t } = useLanguage();
   useEffect(() => {
     registerServiceWorker();
   }, []);
+
   const [currentScreen, setCurrentScreen] = useState<GameScreenType>("menu");
   const [currentStage, setCurrentStage] = useState<number | null>(null);
+
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return (
+      window.innerWidth <= 768 ||
+      window.innerHeight <= 768 ||
+      "ontouchstart" in window ||
+      navigator.maxTouchPoints > 0
+    );
+  });
+
+  const [isOrientationLocked, setIsOrientationLocked] = useState<boolean>(
+    () =>
+      (typeof window !== "undefined" &&
+        storageManager.get<string>(ORIENTATION_LOCK_KEY, {
+          fallback: "false",
+        }) === "true") ??
+      false,
+  );
 
   const handleNavigate = (screen: GameScreenType) => {
     setCurrentScreen(screen);
@@ -37,6 +63,109 @@ const App: React.FC = () => {
     setCurrentScreen("menu");
     setCurrentStage(null);
   };
+
+  const toggleOrientationLock = async () => {
+    if (
+      typeof window === "undefined" ||
+      !(
+        screen as {
+          orientation?: {
+            lock: (t: string) => Promise<void>;
+            unlock: () => Promise<void>;
+            type: string;
+          };
+        }
+      ).orientation
+    ) {
+      alert(t("header.orientationUnlock")); // fallback: 브라우저 미지원 안내
+      return;
+    }
+    const orient = (
+      screen as {
+        orientation: {
+          lock: (t: string) => Promise<void>;
+          unlock: () => Promise<void>;
+          type: string;
+        };
+      }
+    ).orientation;
+    try {
+      if (isOrientationLocked) {
+        await orient.unlock();
+        setIsOrientationLocked(false);
+        storageManager.set(ORIENTATION_LOCK_KEY, "false", { silent: true });
+      } else {
+        try {
+          const doc = document.documentElement;
+          if (doc.requestFullscreen) await doc.requestFullscreen();
+          else if (
+            (doc as { webkitRequestFullscreen?: () => Promise<void> })
+              .webkitRequestFullscreen
+          )
+            await (
+              doc as { webkitRequestFullscreen: () => Promise<void> }
+            ).webkitRequestFullscreen();
+        } catch {
+          /* 전체화면 실패해도 진행 */
+        }
+        const current = orient.type;
+        const lockType = current.startsWith("portrait")
+          ? "portrait"
+          : "landscape";
+        await orient.lock(lockType);
+        setIsOrientationLocked(true);
+        storageManager.set(ORIENTATION_LOCK_KEY, "true", { silent: true });
+      }
+    } catch (err) {
+      console.warn("화면 고정 실패:", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.includes("not allowed") || msg.includes("denied")) {
+        alert(t("header.orientationUnlock")); // 또는 별도 locale 키
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window === "undefined") return;
+      setIsMobile(
+        window.innerWidth <= 768 ||
+          window.innerHeight <= 768 ||
+          "ontouchstart" in window ||
+          navigator.maxTouchPoints > 0,
+      );
+    };
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (
+      typeof window === "undefined" ||
+      !(
+        screen as {
+          orientation?: { lock: (t: string) => Promise<void>; type: string };
+        }
+      ).orientation ||
+      !isOrientationLocked
+    )
+      return;
+    const orient = (
+      screen as {
+        orientation: { lock: (t: string) => Promise<void>; type: string };
+      }
+    ).orientation;
+    const current = orient.type;
+    const lockType = current.startsWith("portrait") ? "portrait" : "landscape";
+    orient.lock(lockType).catch(() => {
+      setIsOrientationLocked(false);
+      storageManager.set(ORIENTATION_LOCK_KEY, "false", { silent: true });
+    });
+  }, []);
 
   return (
     <ErrorBoundary>
@@ -73,6 +202,27 @@ const App: React.FC = () => {
           </GameContainer>
           <Footer />
         </div>
+        {isMobile &&
+          typeof window !== "undefined" &&
+          (screen as { orientation?: unknown }).orientation && (
+            <button
+              type="button"
+              className="orientation-lock-button"
+              onClick={toggleOrientationLock}
+              aria-label={
+                isOrientationLocked
+                  ? t("header.orientationUnlock")
+                  : t("header.orientationLock")
+              }
+              title={
+                isOrientationLocked
+                  ? t("header.orientationUnlock")
+                  : t("header.orientationLock")
+              }
+            >
+              {isOrientationLocked ? "🔒" : "🔓"}
+            </button>
+          )}
       </HelmetProvider>
     </ErrorBoundary>
   );

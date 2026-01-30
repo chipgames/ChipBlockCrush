@@ -9,7 +9,11 @@
     "soundOn": "Sound On",
     "soundOff": "Sound Off",
     "lightMode": "Light Mode",
-    "darkMode": "Dark Mode"
+    "darkMode": "Dark Mode",
+    "orientationLock": "Lock orientation",
+    "orientationUnlock": "Unlock orientation",
+    "orientationLandscape": "Lock landscape",
+    "orientationPortrait": "Lock portrait"
   },
   "menu": {
     "subtitle": "Place blocks and complete lines"
@@ -24,7 +28,11 @@
     "gameOver": "Game Over",
     "playAgain": "Play Again",
     "backToStage": "Back to Menu",
-    "placeHint": "Select a block, then click a cell"
+    "placeHint": "Select a block, then click a cell",
+    "landscapeMode": "Landscape",
+    "portraitMode": "Portrait",
+    "switchToLandscape": "Switch to Landscape",
+    "switchToPortrait": "Switch to Portrait"
   },
   "guide": {
     "title": "Game Guide",

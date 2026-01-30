@@ -10,7 +10,8 @@
   margin: 0 auto;
 }
 
-.game-canvas-box .block-crush-canvas-wrap {
+/* game-view-16-9 안에서는 wrap이 부모를 꽉 채우도록 (GameScreen.css에서도 설정) */
+.game-view-16-9 .block-crush-canvas-wrap {
   max-width: none;
   aspect-ratio: none;
 }

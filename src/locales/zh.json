@@ -9,7 +9,11 @@
     "soundOn": "开启声音",
     "soundOff": "关闭声音",
     "lightMode": "浅色模式",
-    "darkMode": "深色模式"
+    "darkMode": "深色模式",
+    "orientationLock": "锁定屏幕方向",
+    "orientationUnlock": "解除锁定",
+    "orientationLandscape": "横屏锁定",
+    "orientationPortrait": "竖屏锁定"
   },
   "menu": {
     "subtitle": "放置方块，消除整行"
@@ -24,7 +28,11 @@
     "gameOver": "游戏结束",
     "playAgain": "再玩一次",
     "backToStage": "返回菜单",
-    "placeHint": "选择方块后点击格子"
+    "placeHint": "选择方块后点击格子",
+    "landscapeMode": "横屏",
+    "portraitMode": "竖屏",
+    "switchToLandscape": "切换到横屏",
+    "switchToPortrait": "切换到竖屏"
   },
   "guide": {
     "title": "游戏指南",

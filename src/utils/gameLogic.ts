@@ -19,7 +19,7 @@ export function canPlace(
   const R = shape.length;
   const C = shape[0]?.length ?? 0;
   const N = grid.length;
-  if (row + R > N || col + C > N) return false;
+  if (row < 0 || col < 0 || row + R > N || col + C > N) return false;
   for (let r = 0; r < R; r++) {
     for (let c = 0; c < C; c++) {
       if (shape[r][c] && grid[row + r][col + c] !== 0) return false;

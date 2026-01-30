@@ -9,7 +9,11 @@
     "soundOn": "サウンドON",
     "soundOff": "サウンドOFF",
     "lightMode": "ライトモード",
-    "darkMode": "ダークモード"
+    "darkMode": "ダークモード",
+    "orientationLock": "画面固定",
+    "orientationUnlock": "画面固定解除",
+    "orientationLandscape": "横向き固定",
+    "orientationPortrait": "縦向き固定"
   },
   "menu": {
     "subtitle": "ブロックを置いてラインを揃えよう"
@@ -24,7 +28,11 @@
     "gameOver": "ゲームオーバー",
     "playAgain": "もう一度",
     "backToStage": "メニューへ",
-    "placeHint": "ブロックを選んでマスをクリック"
+    "placeHint": "ブロックを選んでマスをクリック",
+    "landscapeMode": "横向き",
+    "portraitMode": "縦向き",
+    "switchToLandscape": "横向きモードに切り替え",
+    "switchToPortrait": "縦向きモードに切り替え"
   },
   "guide": {
     "title": "ゲームガイド",

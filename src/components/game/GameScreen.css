@@ -6,6 +6,64 @@
   position: relative;
 }
 
+/* 게임 보드 컨테이너 (가로/세로 모드 회전용) */
+.game-board-container {
+  width: 100%;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+/* 모바일에서 가로 모드일 때 게임 보드 회전 및 화면 중앙 정렬 */
+@media (max-width: 768px) {
+  .game-board-container.landscape-mode {
+    transform: rotate(90deg);
+    width: 100vh;
+    height: 100vw;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -50vw;
+    margin-left: -50vh;
+    transform-origin: center center;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .game-board-container.landscape-mode .game-area {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 가로 모드: 16:9 영역을 높이 100% 기준으로 맞추고, 가로는 비율대로 → flex로 중앙 정렬 */
+  .game-board-container.landscape-mode .game-view-16-9 {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+    margin: 0;
+    flex-shrink: 0;
+    font-size: clamp(11px, 2.8vmin, 18px);
+  }
+
+  .game-board-container.landscape-mode
+    .game-view-16-9
+    .block-crush-canvas-wrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+  }
+}
+
 .game-area {
   width: 100%;
   max-width: min(90vw, 800px);
@@ -29,14 +87,7 @@
   font-size: clamp(10px, 1.75vw, 16px);
 }
 
-.game-canvas-box {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-}
-
-.game-canvas-box .block-crush-canvas-wrap {
+.game-view-16-9 .block-crush-canvas-wrap {
   width: 100%;
   height: 100%;
   max-width: none;
@@ -214,6 +265,11 @@
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
 }
 
+/* 가로 모드: 게임 보드가 90deg 회전되어 있으므로 고스트 블록도 -90deg 역회전해 방향 맞춤 */
+.game-drag-ghost.landscape-mode {
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+
 .block-preview-svg {
   display: block;
 }
@@ -285,5 +341,88 @@
 
   .game-block-tray .game-blocks-row {
     justify-content: center;
+  }
+}
+
+/* 가로/세로 모드 토글 버튼 (ChipPuzzleGame 스타일) */
+.orientation-toggle-button {
+  position: fixed;
+  top: 75px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: rgba(102, 126, 234, 0.15);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  min-width: 60px;
+  pointer-events: auto;
+}
+
+.orientation-toggle-button:hover {
+  background: rgba(102, 126, 234, 0.25);
+  border-color: rgba(102, 126, 234, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+}
+
+.orientation-toggle-button:active {
+  transform: translateY(0);
+}
+
+.orientation-toggle-button .orientation-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.orientation-toggle-button .orientation-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (min-width: 769px) {
+  .orientation-toggle-button {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .orientation-toggle-button {
+    top: 75px;
+    right: 10px;
+    display: flex !important;
+    z-index: 10000;
+  }
+
+  .orientation-toggle-button.landscape-mode {
+    top: 75px;
+    left: 10px;
+    right: auto;
+    display: flex !important;
+    z-index: 10000;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 768px) {
+  .orientation-toggle-button {
+    display: flex !important;
+    z-index: 10000;
+  }
+
+  .orientation-toggle-button.landscape-mode {
+    display: flex !important;
+    z-index: 10000;
   }
 }
