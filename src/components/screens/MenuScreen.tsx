@@ -35,6 +35,8 @@ const MenuScreen: React.FC<MenuScreenProps> = ({ onNavigate, onStartGame }) => {
           src={`${import.meta.env.BASE_URL}ChipGames_Logo.png`}
           alt={t("header.logo")}
           className="menu-logo"
+          fetchPriority="high"
+          decoding="async"
         />
       </div>
       <h1 className="menu-title">{t("header.gameTitle")}</h1>

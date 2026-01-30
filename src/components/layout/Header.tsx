@@ -76,6 +76,8 @@ const Header: React.FC<HeaderProps> = memo(({ onNavigate, onStartGame }) => {
             src={`${import.meta.env.BASE_URL}ChipGames_Logo.png`}
             alt={t("header.logo")}
             className="header-logo-img"
+            fetchPriority="high"
+            decoding="async"
           />
           <span className="header-game-title">{t("header.gameTitle")}</span>
         </div>

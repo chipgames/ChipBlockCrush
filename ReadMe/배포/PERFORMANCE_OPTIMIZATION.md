@@ -2,6 +2,12 @@
 
 이 문서는 ChipBlockCrush 프로젝트의 **Vite manualChunks**, **이미지 최적화**, **Service Worker 캐시**에 대해 상세히 설명합니다.
 
+### 적용 현황 (구현 완료)
+
+- **Vite manualChunks**: 함수형 + `game` 청크 적용 (`vite.config.ts`)
+- **이미지**: 로고에 `<picture>` + WebP 소스 + PNG fallback, `fetchPriority="high"`, `decoding="async"` 적용 (Header, MenuScreen). WebP 생성: `npm run image:webp` (선택, sharp 필요)
+- **Service Worker**: Precache(빌드 시 dist 전체 URL 목록 주입) + 전략 분리(에셋은 Cache First, HTML·기타는 Network First). `patch-sw.js`에서 `__PRECACHE_URLS__` 치환
+
 ---
 
 ## 1. Vite manualChunks
@@ -15,16 +21,21 @@
   - **병렬 로딩**: 브라우저가 여러 스크립트를 동시에 받을 수 있음
   - **lazy 로딩과 조합**: 화면별로 다른 청크를 로드해 초기 로딩 시간 단축
 
-### 1.2 현재 설정 (vite.config.ts)
+### 1.2 현재 설정 (vite.config.ts) — 함수형 + game 청크 적용됨
 
 ```js
-rollupOptions: {
-  output: {
-    manualChunks: {
-      vendor: ["react", "react-dom"],
-      helmet: ["react-helmet-async"],
-    },
-  },
+manualChunks(id) {
+  if (id.includes("node_modules")) {
+    if (id.includes("react-dom") || id.includes("react/")) return "vendor";
+    if (id.includes("react-helmet-async")) return "helmet";
+  }
+  if (
+    id.includes("GameScreen") ||
+    id.includes("BlockCrushCanvas") ||
+    id.includes("gameLogic")
+  ) {
+    return "game";
+  }
 },
 ```
 

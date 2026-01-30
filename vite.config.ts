@@ -34,9 +34,19 @@ export default defineConfig(({ command, mode }) => {
       minify: mode === "production" ? "esbuild" : false,
       rollupOptions: {
         output: {
-          manualChunks: {
-            vendor: ["react", "react-dom"],
-            helmet: ["react-helmet-async"],
+          manualChunks(id) {
+            if (id.includes("node_modules")) {
+              if (id.includes("react-dom") || id.includes("react/"))
+                return "vendor";
+              if (id.includes("react-helmet-async")) return "helmet";
+            }
+            if (
+              id.includes("GameScreen") ||
+              id.includes("BlockCrushCanvas") ||
+              id.includes("gameLogic")
+            ) {
+              return "game";
+            }
           },
         },
       },

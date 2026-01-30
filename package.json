@@ -1,6 +1,6 @@
 {
   "name": "chip-block-crush",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,7 +11,8 @@
     "version:patch": "npm version patch --no-git-tag-version",
     "version:minor": "npm version minor --no-git-tag-version",
     "version:major": "npm version major --no-git-tag-version",
-    "deploy": "npm run version:patch && npm run build:gh && npx gh-pages -d dist"
+    "deploy": "npm run version:patch && npm run build:gh && npx gh-pages -d dist",
+    "image:webp": "node scripts/generate-webp.js"
   },
   "dependencies": {
     "react": "^18.2.0",
