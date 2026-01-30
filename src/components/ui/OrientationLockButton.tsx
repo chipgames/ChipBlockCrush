@@ -5,7 +5,7 @@ import "./OrientationLockButton.css";
 
 const OrientationLockButton: React.FC = () => {
   const { t } = useLanguage();
-  const { supported, locked, lockType, lock, unlock, toggleLock } =
+  const { supported, locked, lockType, unlock, toggleLock } =
     useOrientationLock();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);

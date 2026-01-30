@@ -11,16 +11,6 @@ interface OrientationLockState {
 
 const ORIENTATION_STORAGE_KEY = "chipBlockCrush_orientationLock";
 
-function getStoredPreference(): LockType {
-  try {
-    const v = localStorage.getItem(ORIENTATION_STORAGE_KEY);
-    if (v === "landscape" || v === "portrait") return v;
-  } catch {
-    /* ignore */
-  }
-  return null;
-}
-
 function setStoredPreference(value: LockType) {
   try {
     if (value) localStorage.setItem(ORIENTATION_STORAGE_KEY, value);
@@ -32,11 +22,15 @@ function setStoredPreference(value: LockType) {
 
 export function useOrientationLock() {
   const [state, setState] = useState<OrientationLockState>(() => {
-    const orient = typeof screen !== "undefined" && screen.orientation;
+    const orient =
+      typeof screen !== "undefined" &&
+      (screen.orientation as
+        | { lock?: (t: string) => Promise<void>; unlock?: () => void }
+        | undefined);
     const supported = !!(
       orient &&
-      typeof orient.lock === "function" &&
-      typeof orient.unlock === "function"
+      typeof orient?.lock === "function" &&
+      typeof orient?.unlock === "function"
     );
     return {
       supported,
@@ -75,7 +69,11 @@ export function useOrientationLock() {
         }
         const lockOrientation =
           type === "landscape" ? "landscape-primary" : "portrait-primary";
-        await screen.orientation.lock(lockOrientation);
+        const orient = screen.orientation as unknown as {
+          lock: (t: string) => Promise<void>;
+          unlock: () => void;
+        };
+        await orient.lock(lockOrientation);
         setStoredPreference(type);
         lockedRef.current = type;
         setState((s) => ({ ...s, locked: true, lockType: type, error: null }));

@@ -21,6 +21,15 @@ import "@/styles/OrientationLockButton.css";
 
 const ORIENTATION_LOCK_KEY = "chipBlockCrush_orientationLocked";
 
+/** Screen Orientation API (lock/unlock) - 표준 타입에 lock이 없을 수 있어 단언용 */
+interface ScreenWithOrientationLock {
+  orientation?: {
+    lock: (t: string) => Promise<void>;
+    unlock: () => Promise<void>;
+    type: string;
+  };
+}
+
 const App: React.FC = () => {
   useTheme();
   const { t } = useLanguage();
@@ -65,30 +74,12 @@ const App: React.FC = () => {
   };
 
   const toggleOrientationLock = async () => {
-    if (
-      typeof window === "undefined" ||
-      !(
-        screen as {
-          orientation?: {
-            lock: (t: string) => Promise<void>;
-            unlock: () => Promise<void>;
-            type: string;
-          };
-        }
-      ).orientation
-    ) {
+    const scr = screen as unknown as ScreenWithOrientationLock;
+    if (typeof window === "undefined" || !scr.orientation) {
       alert(t("header.orientationUnlock")); // fallback: 브라우저 미지원 안내
       return;
     }
-    const orient = (
-      screen as {
-        orientation: {
-          lock: (t: string) => Promise<void>;
-          unlock: () => Promise<void>;
-          type: string;
-        };
-      }
-    ).orientation;
+    const orient = scr.orientation;
     try {
       if (isOrientationLocked) {
         await orient.unlock();
@@ -99,11 +90,16 @@ const App: React.FC = () => {
           const doc = document.documentElement;
           if (doc.requestFullscreen) await doc.requestFullscreen();
           else if (
-            (doc as { webkitRequestFullscreen?: () => Promise<void> })
-              .webkitRequestFullscreen
+            (
+              doc as unknown as {
+                webkitRequestFullscreen?: () => Promise<void>;
+              }
+            ).webkitRequestFullscreen
           )
             await (
-              doc as { webkitRequestFullscreen: () => Promise<void> }
+              doc as unknown as {
+                webkitRequestFullscreen: () => Promise<void>;
+              }
             ).webkitRequestFullscreen();
         } catch {
           /* 전체화면 실패해도 진행 */
@@ -144,21 +140,14 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const scr = screen as unknown as ScreenWithOrientationLock;
     if (
       typeof window === "undefined" ||
-      !(
-        screen as {
-          orientation?: { lock: (t: string) => Promise<void>; type: string };
-        }
-      ).orientation ||
+      !scr.orientation ||
       !isOrientationLocked
     )
       return;
-    const orient = (
-      screen as {
-        orientation: { lock: (t: string) => Promise<void>; type: string };
-      }
-    ).orientation;
+    const orient = scr.orientation;
     const current = orient.type;
     const lockType = current.startsWith("portrait") ? "portrait" : "landscape";
     orient.lock(lockType).catch(() => {
@@ -203,26 +192,26 @@ const App: React.FC = () => {
           <Footer />
         </div>
         {isMobile &&
-          typeof window !== "undefined" &&
-          (screen as { orientation?: unknown }).orientation && (
-            <button
-              type="button"
-              className="orientation-lock-button"
-              onClick={toggleOrientationLock}
-              aria-label={
-                isOrientationLocked
-                  ? t("header.orientationUnlock")
-                  : t("header.orientationLock")
-              }
-              title={
-                isOrientationLocked
-                  ? t("header.orientationUnlock")
-                  : t("header.orientationLock")
-              }
-            >
-              {isOrientationLocked ? "🔒" : "🔓"}
-            </button>
-          )}
+        typeof window !== "undefined" &&
+        (screen as unknown as ScreenWithOrientationLock).orientation ? (
+          <button
+            type="button"
+            className="orientation-lock-button"
+            onClick={toggleOrientationLock}
+            aria-label={
+              isOrientationLocked
+                ? t("header.orientationUnlock")
+                : t("header.orientationLock")
+            }
+            title={
+              isOrientationLocked
+                ? t("header.orientationUnlock")
+                : t("header.orientationLock")
+            }
+          >
+            {isOrientationLocked ? "🔒" : "🔓"}
+          </button>
+        ) : null}
       </HelmetProvider>
     </ErrorBoundary>
   );

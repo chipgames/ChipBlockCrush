@@ -265,9 +265,10 @@
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
 }
 
-/* 가로 모드: 게임 보드가 90deg 회전되어 있으므로 고스트 블록도 -90deg 역회전해 방향 맞춤 */
+/* 가로 모드: 게임 보드가 rotate(90deg) 시계방향이므로 고스트도 rotate(90deg)로 같은 방향 맞춤 */
 .game-drag-ghost.landscape-mode {
-  transform: translate(-50%, -50%) rotate(-90deg);
+  transform: translate(-50%, -50%) rotate(90deg);
+  transform-origin: center center;
 }
 
 .block-preview-svg {

@@ -183,13 +183,11 @@ const BlockCrushCanvas = forwardRef<
         const {
           padding,
           scale,
-          topBarHeight,
           rightPanelWidth,
           menuRect,
           trayRects,
           offsetX,
           offsetY,
-          traySlotSize,
         } = L;
 
         const radius = 8;
