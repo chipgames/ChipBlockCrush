@@ -13,7 +13,9 @@
     "orientationLock": "画面固定",
     "orientationUnlock": "画面固定解除",
     "orientationLandscape": "横向き固定",
-    "orientationPortrait": "縦向き固定"
+    "orientationPortrait": "縦向き固定",
+    "hideMenuFooter": "メニュー・フッターを隠す",
+    "showMenuFooter": "メニュー・フッターを表示"
   },
   "menu": {
     "subtitle": "ブロックを置いてラインを揃えよう"

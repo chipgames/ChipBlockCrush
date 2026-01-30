@@ -13,7 +13,9 @@
     "orientationLock": "Lock orientation",
     "orientationUnlock": "Unlock orientation",
     "orientationLandscape": "Lock landscape",
-    "orientationPortrait": "Lock portrait"
+    "orientationPortrait": "Lock portrait",
+    "hideMenuFooter": "Hide menu & footer",
+    "showMenuFooter": "Show menu & footer"
   },
   "menu": {
     "subtitle": "Place blocks and complete lines"

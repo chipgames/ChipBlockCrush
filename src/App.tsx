@@ -59,6 +59,9 @@ const App: React.FC = () => {
       false,
   );
 
+  /** 모바일 전용: 메뉴·푸터 숨김 (화면 확대용) */
+  const [menuFooterHidden, setMenuFooterHidden] = useState(false);
+
   const handleNavigate = (screen: GameScreenType) => {
     setCurrentScreen(screen);
   };
@@ -160,7 +163,9 @@ const App: React.FC = () => {
     <ErrorBoundary>
       <HelmetProvider>
         <SEOHead />
-        <div className="app-container">
+        <div
+          className={`app-container${menuFooterHidden ? " menu-footer-hidden" : ""}`}
+        >
           <Header
             onNavigate={handleNavigate}
             onStartGame={handleStartGame}
@@ -212,6 +217,25 @@ const App: React.FC = () => {
             {isOrientationLocked ? "🔒" : "🔓"}
           </button>
         ) : null}
+        {isMobile && (
+          <button
+            type="button"
+            className="menu-footer-toggle"
+            onClick={() => setMenuFooterHidden((v) => !v)}
+            aria-label={
+              menuFooterHidden
+                ? t("header.showMenuFooter")
+                : t("header.hideMenuFooter")
+            }
+            title={
+              menuFooterHidden
+                ? t("header.showMenuFooter")
+                : t("header.hideMenuFooter")
+            }
+          >
+            {menuFooterHidden ? "☰" : "✕"}
+          </button>
+        )}
       </HelmetProvider>
     </ErrorBoundary>
   );

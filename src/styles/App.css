@@ -29,8 +29,59 @@ body,
   width: 100%;
 }
 
+/* 모바일: 메뉴·푸터 숨김 시 헤더/푸터 비표시 */
+.app-container.menu-footer-hidden .header,
+.app-container.menu-footer-hidden .footer {
+  display: none !important;
+}
+
+/* 모바일 전용: 메뉴·푸터 숨기기/보기 토글 버튼 */
+.menu-footer-toggle {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .app-container main {
     padding: 0.5rem;
+  }
+
+  .menu-footer-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 9998;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 2px solid rgba(102, 126, 234, 0.4);
+    border-radius: 12px;
+    background: rgba(102, 126, 234, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: var(--text-primary);
+    font-size: 20px;
+    cursor: pointer;
+    transition:
+      background 0.2s,
+      transform 0.2s;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .menu-footer-toggle:hover {
+    background: rgba(102, 126, 234, 0.35);
+    transform: scale(1.05);
+  }
+
+  .menu-footer-toggle:active {
+    transform: scale(0.98);
+  }
+}
+
+@media (min-width: 769px) {
+  .menu-footer-toggle {
+    display: none !important;
   }
 }

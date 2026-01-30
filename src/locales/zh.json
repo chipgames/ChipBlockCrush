@@ -13,7 +13,9 @@
     "orientationLock": "锁定屏幕方向",
     "orientationUnlock": "解除锁定",
     "orientationLandscape": "横屏锁定",
-    "orientationPortrait": "竖屏锁定"
+    "orientationPortrait": "竖屏锁定",
+    "hideMenuFooter": "隐藏菜单和页脚",
+    "showMenuFooter": "显示菜单和页脚"
   },
   "menu": {
     "subtitle": "放置方块，消除整行"

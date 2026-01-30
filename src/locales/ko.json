@@ -13,7 +13,9 @@
     "orientationLock": "화면 고정",
     "orientationUnlock": "화면 고정 해제",
     "orientationLandscape": "가로 고정",
-    "orientationPortrait": "세로 고정"
+    "orientationPortrait": "세로 고정",
+    "hideMenuFooter": "메뉴·푸터 숨기기",
+    "showMenuFooter": "메뉴·푸터 보기"
   },
   "menu": {
     "subtitle": "블록을 배치하고 줄을 완성하세요"
