@@ -563,7 +563,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
 
 /**
  * 드래그 고스트용 블록 미리보기 SVG.
- * shape(2차원 배열), colorIndex(색상), size(셀 픽셀)로 작은 블록 하나를 그림.
+ * getShapeCenter 기준으로 도형 중심을 SVG 중심에 맞추고, 이동 후 잘리지 않도록 viewBox를 넓힘.
  */
 function BlockPreview({
   shape,
@@ -580,30 +580,42 @@ function BlockPreview({
   const cellSize = size;
   const w = cols * cellSize;
   const h = rows * cellSize;
+  const center = getShapeCenter(shape);
+  const shapeCenterPxX = center.col * cellSize + cellSize / 2;
+  const shapeCenterPxY = center.row * cellSize + cellSize / 2;
+  const dx = w / 2 - shapeCenterPxX;
+  const dy = h / 2 - shapeCenterPxY;
+  const padding = 4;
+  const viewMinX = Math.min(0, dx) - padding;
+  const viewMinY = Math.min(0, dy) - padding;
+  const viewW = w + Math.abs(dx) + padding * 2;
+  const viewH = h + Math.abs(dy) + padding * 2;
   return (
     <svg
-      width={w}
-      height={h}
-      viewBox={`0 0 ${w} ${h}`}
+      width={viewW}
+      height={viewH}
+      viewBox={`${viewMinX} ${viewMinY} ${viewW} ${viewH}`}
       className="block-preview-svg"
     >
-      {shape.map((row, r) =>
-        row.map((cell, c) =>
-          cell ? (
-            <rect
-              key={`${r}-${c}`}
-              x={c * cellSize + 2}
-              y={r * cellSize + 2}
-              width={cellSize - 4}
-              height={cellSize - 4}
-              fill={color}
-              stroke="rgba(255,255,255,0.4)"
-              strokeWidth={1}
-              rx={4}
-            />
-          ) : null,
-        ),
-      )}
+      <g transform={`translate(${dx}, ${dy})`}>
+        {shape.map((row, r) =>
+          row.map((cell, c) =>
+            cell ? (
+              <rect
+                key={`${r}-${c}`}
+                x={c * cellSize + 1}
+                y={r * cellSize + 1}
+                width={cellSize - 1}
+                height={cellSize - 1}
+                fill={color}
+                stroke="rgba(255,255,255,0.4)"
+                strokeWidth={1}
+                rx={4}
+              />
+            ) : null,
+          ),
+        )}
+      </g>
     </svg>
   );
 }
