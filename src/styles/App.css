@@ -29,6 +29,16 @@ body,
   width: 100%;
 }
 
+/* Lazy 로딩 중 화면 전환 시 최소 높이 유지 */
+.app-screen-fallback {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+}
+
 /* 모바일: 메뉴·푸터 숨김 시 헤더/푸터 비표시 */
 .app-container.menu-footer-hidden .header,
 .app-container.menu-footer-hidden .footer {

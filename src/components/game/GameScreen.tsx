@@ -441,6 +441,11 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
     };
   }, [dragStart, dragging, grid, placeBlockAt]);
 
+  /** 캔버스 레이아웃 수신 (셀 크기 → 드래그 고스트 스케일용). 참조 안정화로 캔버스 리렌더 감소 */
+  const handleLayout = useCallback((layout: { cellSize: number }) => {
+    setGridCellSize(layout.cellSize);
+  }, []);
+
   /** 캔버스에 그릴 “배치 미리보기” 블록. 유효한 위치일 때만 BlockCrushCanvas에 전달 */
   const preview: PreviewBlock | null = useMemo(() => {
     if (
@@ -484,7 +489,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
               grid={grid}
               onCellClick={handleCellClick}
               preview={preview}
-              onLayout={(layout) => setGridCellSize(layout.cellSize)}
+              onLayout={handleLayout}
               score={score}
               scoreLabel={t("game.score")}
               bestScore={bestScore}

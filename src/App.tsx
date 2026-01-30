@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import { HelmetProvider } from "react-helmet-async";
 import { ErrorBoundary } from "@/components/layout/ErrorBoundary";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import GameContainer from "@/components/layout/GameContainer";
 import MenuScreen from "@/components/screens/MenuScreen";
-import GuideScreen from "@/components/screens/GuideScreen";
-import HelpScreen from "@/components/screens/HelpScreen";
-import AboutScreen from "@/components/screens/AboutScreen";
-import PrivacyScreen from "@/components/screens/PrivacyScreen";
-import GameScreen from "@/components/game/GameScreen";
 import ContactModal from "@/components/ui/ContactModal";
 import SEOHead from "@/components/seo/SEOHead";
+
+const GuideScreen = lazy(() => import("@/components/screens/GuideScreen"));
+const HelpScreen = lazy(() => import("@/components/screens/HelpScreen"));
+const AboutScreen = lazy(() => import("@/components/screens/AboutScreen"));
+const PrivacyScreen = lazy(() => import("@/components/screens/PrivacyScreen"));
+const GameScreen = lazy(() => import("@/components/game/GameScreen"));
 import { GameScreen as GameScreenType } from "@/types/ui";
 import { useTheme } from "@/hooks/useTheme";
 import { registerServiceWorker } from "@/utils/serviceWorker";
@@ -67,19 +68,22 @@ const App: React.FC = () => {
   /** 문의하기 모달 표시 여부 */
   const [contactModalOpen, setContactModalOpen] = useState(false);
 
-  const handleNavigate = (screen: GameScreenType) => {
+  const handleNavigate = useCallback((screen: GameScreenType) => {
     setCurrentScreen(screen);
-  };
+  }, []);
 
-  const handleStartGame = () => {
+  const handleStartGame = useCallback(() => {
     setCurrentStage(1);
     setCurrentScreen("game");
-  };
+  }, []);
 
-  const handleBackFromGame = () => {
+  const handleBackFromGame = useCallback(() => {
     setCurrentScreen("menu");
     setCurrentStage(null);
-  };
+  }, []);
+
+  const openContactModal = useCallback(() => setContactModalOpen(true), []);
+  const closeContactModal = useCallback(() => setContactModalOpen(false), []);
 
   const toggleOrientationLock = async () => {
     const scr = screen as unknown as ScreenWithOrientationLock;
@@ -177,40 +181,43 @@ const App: React.FC = () => {
             currentScreen={currentScreen}
           />
           <GameContainer>
-            {currentScreen === "guide" && (
-              <GuideScreen onNavigate={handleNavigate} />
-            )}
-            {currentScreen === "help" && (
-              <HelpScreen onNavigate={handleNavigate} />
-            )}
-            {currentScreen === "about" && (
-              <AboutScreen onNavigate={handleNavigate} />
-            )}
-            {currentScreen === "privacy" && (
-              <PrivacyScreen onNavigate={handleNavigate} />
-            )}
-            {currentScreen === "menu" && (
-              <MenuScreen
-                onNavigate={handleNavigate}
-                onStartGame={handleStartGame}
-              />
-            )}
-            {currentScreen === "game" && currentStage != null && (
-              <GameScreen
-                stageNumber={currentStage}
-                onBack={handleBackFromGame}
-              />
-            )}
+            <Suspense
+              fallback={
+                <div className="app-screen-fallback" aria-live="polite" />
+              }
+            >
+              {currentScreen === "guide" && (
+                <GuideScreen onNavigate={handleNavigate} />
+              )}
+              {currentScreen === "help" && (
+                <HelpScreen onNavigate={handleNavigate} />
+              )}
+              {currentScreen === "about" && (
+                <AboutScreen onNavigate={handleNavigate} />
+              )}
+              {currentScreen === "privacy" && (
+                <PrivacyScreen onNavigate={handleNavigate} />
+              )}
+              {currentScreen === "menu" && (
+                <MenuScreen
+                  onNavigate={handleNavigate}
+                  onStartGame={handleStartGame}
+                />
+              )}
+              {currentScreen === "game" && currentStage != null && (
+                <GameScreen
+                  stageNumber={currentStage}
+                  onBack={handleBackFromGame}
+                />
+              )}
+            </Suspense>
           </GameContainer>
           <Footer
             onNavigate={handleNavigate}
-            onOpenContact={() => setContactModalOpen(true)}
+            onOpenContact={openContactModal}
           />
         </div>
-        <ContactModal
-          open={contactModalOpen}
-          onClose={() => setContactModalOpen(false)}
-        />
+        <ContactModal open={contactModalOpen} onClose={closeContactModal} />
         {isMobile &&
         typeof window !== "undefined" &&
         (screen as unknown as ScreenWithOrientationLock).orientation ? (

@@ -4,6 +4,7 @@ import React, {
   useCallback,
   forwardRef,
   useImperativeHandle,
+  memo,
 } from "react";
 import type { GridCell } from "@/types/game";
 import { getCanvasSize } from "@/constants/canvasConfig";
@@ -562,4 +563,4 @@ const BlockCrushCanvas = forwardRef<
 );
 
 BlockCrushCanvas.displayName = "BlockCrushCanvas";
-export default BlockCrushCanvas;
+export default memo(BlockCrushCanvas);
