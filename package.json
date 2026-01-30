@@ -1,13 +1,14 @@
 {
   "name": "chip-block-crush",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:gh": "vite build --mode production",
+    "build:gh": "vite build --mode production && node scripts/patch-sw.js",
     "preview": "vite preview",
-    "deploy": "npm run build:gh && npx gh-pages -d dist"
+    "version:patch": "npm version patch --no-git-tag-version",
+    "deploy": "npm run version:patch && npm run build:gh && npx gh-pages -d dist"
   },
   "dependencies": {
     "react": "^18.2.0",

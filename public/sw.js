@@ -1,4 +1,4 @@
-const CACHE_NAME = "chipblockcrush-v1";
+const CACHE_NAME = "chipblockcrush-v__BUILD_VERSION__";
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();

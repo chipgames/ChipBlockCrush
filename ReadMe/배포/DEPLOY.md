@@ -38,8 +38,14 @@ npm run deploy
 
 이 명령은 다음을 순서대로 실행합니다.
 
-1. `npm run build:gh` — 프로덕션 빌드
-2. `npx gh-pages -d dist` — `dist/` 내용을 `gh-pages` 브랜치로 푸시
+1. **`npm run version:patch`** — `package.json`의 패치 버전 자동 증가 (예: 1.0.0 → 1.0.1). Git 태그/커밋은 만들지 않습니다.
+2. **`npm run build:gh`** — 프로덕션 빌드 후 `dist/sw.js`의 캐시 이름을 새 버전으로 치환해 Service Worker 캐시가 갱신되도록 합니다.
+3. **`npx gh-pages -d dist`** — `dist/` 내용을 `gh-pages` 브랜치로 푸시
+
+배포 후 `package.json`·`package-lock.json`이 바뀌므로, 필요하면 버전 업을 커밋해 두세요.
+
+- **버전만 올리기**: `npm run version:patch` (배포 없이)
+- **빌드만** (버전 유지): `npm run build:gh` (캐시 이름은 현재 `package.json` 버전 사용)
 
 배포 후 URL 예:
 
