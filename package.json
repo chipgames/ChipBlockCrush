@@ -6,8 +6,11 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "build:gh": "vite build --mode production && node scripts/patch-sw.js",
+    "build:release": "npm run version:patch && npm run build:gh",
     "preview": "vite preview",
     "version:patch": "npm version patch --no-git-tag-version",
+    "version:minor": "npm version minor --no-git-tag-version",
+    "version:major": "npm version major --no-git-tag-version",
     "deploy": "npm run version:patch && npm run build:gh && npx gh-pages -d dist"
   },
   "dependencies": {

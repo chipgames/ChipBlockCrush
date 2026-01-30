@@ -7,17 +7,29 @@
 - `package.json`의 `homepage`가 없으면 GitHub Pages 기준:  
   `https://<username>.github.io/ChipBlockCrush/`
 
+## 버전 자동 증가
+
+- **`npm run deploy`** — 배포 시 **패치 버전이 자동으로 1 증가**한 뒤 빌드·배포됩니다. (예: 1.0.5 → 1.0.6)
+- **`npm run build:release`** — 버전을 1 올린 뒤 GitHub Pages용 빌드만 수행(배포 없음). 배포 전 로컬에서 버전 올려서 확인할 때 사용합니다.
+- **수동 버전 변경**: `npm run version:patch`(패치), `npm run version:minor`(마이너), `npm run version:major`(메이저). Git 태그/커밋은 만들지 않습니다.
+
 ## 1. 빌드
 
 ```bash
-# 타입 검사 + 프로덕션 빌드 (base: /ChipBlockCrush/)
+# 타입 검사 + 프로덕션 빌드 (base: /ChipBlockCrush/) — 버전 변경 없음
 npm run build
 ```
 
-또는 GitHub Pages 전용 빌드만:
+GitHub Pages 전용 빌드 (버전 유지):
 
 ```bash
 npm run build:gh
+```
+
+버전 1 올린 뒤 GitHub Pages용 빌드 (배포 없이):
+
+```bash
+npm run build:release
 ```
 
 빌드 결과는 `dist/` 폴더에 생성됩니다.
@@ -38,14 +50,15 @@ npm run deploy
 
 이 명령은 다음을 순서대로 실행합니다.
 
-1. **`npm run version:patch`** — `package.json`의 패치 버전 자동 증가 (예: 1.0.0 → 1.0.1). Git 태그/커밋은 만들지 않습니다.
+1. **`npm run version:patch`** — `package.json`의 패치 버전 자동 증가 (예: 1.0.5 → 1.0.6). Git 태그/커밋은 만들지 않습니다.
 2. **`npm run build:gh`** — 프로덕션 빌드 후 `dist/sw.js`의 캐시 이름을 새 버전으로 치환해 Service Worker 캐시가 갱신되도록 합니다.
 3. **`npx gh-pages -d dist`** — `dist/` 내용을 `gh-pages` 브랜치로 푸시
 
 배포 후 `package.json`·`package-lock.json`이 바뀌므로, 필요하면 버전 업을 커밋해 두세요.
 
-- **버전만 올리기**: `npm run version:patch` (배포 없이)
-- **빌드만** (버전 유지): `npm run build:gh` (캐시 이름은 현재 `package.json` 버전 사용)
+- **버전만 올리기**: `npm run version:patch` / `version:minor` / `version:major` (배포 없이)
+- **빌드만** (버전 유지): `npm run build:gh`
+- **버전 올리고 빌드만** (배포 없이): `npm run build:release`
 
 배포 후 URL 예:
 
