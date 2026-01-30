@@ -13,7 +13,38 @@
 .about-description {
   color: var(--text-secondary);
   line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.about-section-title {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin: 20px 0 10px 0;
+}
+
+.about-features {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+.about-features li {
+  margin-bottom: 8px;
+}
+
+.about-credits {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.about-contact {
+  color: var(--text-secondary);
+  line-height: 1.6;
   margin-bottom: 24px;
+  font-size: 0.95rem;
 }
 
 .about-back {

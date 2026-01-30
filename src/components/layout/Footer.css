@@ -37,6 +37,14 @@
   color: var(--accent-primary);
 }
 
+.footer-link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
 .footer-center {
   display: flex;
   align-items: center;

@@ -4,7 +4,8 @@ export type GameScreen =
   | "game"
   | "guide"
   | "help"
-  | "about";
+  | "about"
+  | "privacy";
 
 export interface ScreenState {
   currentScreen: GameScreen;

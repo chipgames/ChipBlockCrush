@@ -1,44 +1,50 @@
-.help-screen {
+.privacy-screen {
   max-width: 640px;
   margin: 0 auto;
   padding: 24px;
 }
 
-.help-title {
+.privacy-title {
   font-size: 1.5rem;
   color: var(--text-primary);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
-.help-intro {
+.privacy-updated {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.privacy-intro {
   color: var(--text-secondary);
   line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-.help-faq {
   margin-bottom: 24px;
 }
 
-.help-faq-item {
+.privacy-sections {
+  margin-bottom: 24px;
+}
+
+.privacy-section {
   margin-bottom: 20px;
 }
 
-.help-faq-q {
+.privacy-section-title {
+  font-size: 1.05rem;
   color: var(--text-primary);
+  margin-bottom: 8px;
   font-weight: 600;
-  margin-bottom: 6px;
-  line-height: 1.5;
 }
 
-.help-faq-a {
+.privacy-section-content {
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0;
-  padding-left: 0.5em;
+  font-size: 0.95rem;
 }
 
-.help-back {
+.privacy-back {
   padding: 12px 24px;
   background: var(--gradient-primary);
   border: none;
@@ -49,6 +55,6 @@
   transition: opacity 0.2s;
 }
 
-.help-back:hover {
+.privacy-back:hover {
   opacity: 0.9;
 }

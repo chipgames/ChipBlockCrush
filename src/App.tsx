@@ -8,6 +8,7 @@ import MenuScreen from "@/components/screens/MenuScreen";
 import GuideScreen from "@/components/screens/GuideScreen";
 import HelpScreen from "@/components/screens/HelpScreen";
 import AboutScreen from "@/components/screens/AboutScreen";
+import PrivacyScreen from "@/components/screens/PrivacyScreen";
 import GameScreen from "@/components/game/GameScreen";
 import SEOHead from "@/components/seo/SEOHead";
 import { GameScreen as GameScreenType } from "@/types/ui";
@@ -181,6 +182,9 @@ const App: React.FC = () => {
             {currentScreen === "about" && (
               <AboutScreen onNavigate={handleNavigate} />
             )}
+            {currentScreen === "privacy" && (
+              <PrivacyScreen onNavigate={handleNavigate} />
+            )}
             {currentScreen === "menu" && (
               <MenuScreen
                 onNavigate={handleNavigate}
@@ -194,7 +198,7 @@ const App: React.FC = () => {
               />
             )}
           </GameContainer>
-          <Footer />
+          <Footer onNavigate={handleNavigate} />
         </div>
         {isMobile &&
         typeof window !== "undefined" &&
