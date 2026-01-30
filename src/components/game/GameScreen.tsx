@@ -36,6 +36,7 @@ import { GRID_SIZE, BLOCKS_PER_ROUND } from "@/constants/gameConfig";
 import { getRandomBlockId, getBlockColor } from "@/constants/blockShapes";
 import type { GridCell } from "@/types/game";
 import { storageManager } from "@/utils/storage";
+import { soundManager } from "@/utils/SoundManager";
 import "./GameScreen.css";
 
 /** 게임 화면 props: 스테이지 번호(시드용), 메뉴로 돌아가기 콜백 */
@@ -213,6 +214,8 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
       const shapeIdx = currentBlockIndices[blockIndex];
       const shape = getBlockShapeByIndex(shapeIdx);
       if (!shape || !canPlace(grid, shape, row, col)) return;
+
+      soundManager.playPlace();
 
       let nextGrid = placeBlock(
         grid,
