@@ -10,7 +10,7 @@ interface AboutScreenProps {
 const AboutScreen: React.FC<AboutScreenProps> = ({ onNavigate }) => {
   const { t } = useLanguage();
   return (
-    <div className="about-screen">
+    <div className="about-screen" role="main" aria-label={t("about.title")}>
       <h1 className="about-title">{t("about.title")}</h1>
       <p className="about-description">{t("about.description")}</p>
       <h2 className="about-section-title">{t("about.featuresTitle")}</h2>
@@ -26,7 +26,7 @@ const AboutScreen: React.FC<AboutScreenProps> = ({ onNavigate }) => {
         className="about-back"
         onClick={() => onNavigate("menu")}
       >
-        {t("header.playGame")}
+        {t("game.backToStage")}
       </button>
     </div>
   );

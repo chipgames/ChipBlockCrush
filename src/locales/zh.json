@@ -100,6 +100,20 @@
     "section5Title": "5. 联系我们",
     "section5Content": "对本隐私政策有疑问时，请通过下方「联系我们」与我们联系。本政策可能因法律法规或服务变更而更新，重大变更将在服务内通知。"
   },
+  "contactModal": {
+    "title": "联系我们",
+    "close": "关闭",
+    "section1Title": "游戏相关咨询",
+    "section1Content": "如在游戏过程中遇到问题或有建议，请随时联系我们。我们会尽快回复。",
+    "section2Title": "漏洞反馈",
+    "section2Content": "如在游戏中发现漏洞，请告知发生情况及复现方法，以便我们改进。",
+    "section3Title": "意见反馈",
+    "section3Content": "我们期待您对游戏改进的宝贵意见。欢迎提出新功能建议或改进想法。",
+    "section4Title": "联系方式",
+    "section4Content": "如有游戏相关咨询或建议，请随时联系我们。我们会尽快回复。",
+    "emailInstruction": "如有游戏、广告、隐私政策或其他问题，请通过下方邮箱联系我们。",
+    "emailLabel": "邮箱"
+  },
   "footer": {
     "privacy": "隐私政策",
     "contact": "联系我们",

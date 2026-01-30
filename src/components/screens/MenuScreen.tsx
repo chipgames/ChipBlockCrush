@@ -43,15 +43,6 @@ const MenuScreen: React.FC<MenuScreenProps> = ({ onNavigate, onStartGame }) => {
         {t("header.playGame")}
       </button>
       <nav className="menu-links">
-        {showDownload && (
-          <button
-            type="button"
-            className="menu-link menu-link-download"
-            onClick={handleDownload}
-          >
-            {t("header.download")}
-          </button>
-        )}
         <button
           type="button"
           className="menu-link"
@@ -73,6 +64,15 @@ const MenuScreen: React.FC<MenuScreenProps> = ({ onNavigate, onStartGame }) => {
         >
           {t("header.about")}
         </button>
+        {showDownload && (
+          <button
+            type="button"
+            className="menu-link menu-link-download"
+            onClick={handleDownload}
+          >
+            {t("header.download")}
+          </button>
+        )}
       </nav>
       {showInstallHint && hintType && (
         <div

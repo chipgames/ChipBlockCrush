@@ -53,7 +53,7 @@ function BlockShapePreview({
 const GuideScreen: React.FC<GuideScreenProps> = ({ onNavigate }) => {
   const { t } = useLanguage();
   return (
-    <div className="guide-screen">
+    <div className="guide-screen" role="main" aria-label={t("guide.title")}>
       <h1 className="guide-title">{t("guide.title")}</h1>
       <p className="guide-description">{t("guide.description")}</p>
       <h2 className="guide-section-title">{t("guide.basicTitle")}</h2>
@@ -87,7 +87,7 @@ const GuideScreen: React.FC<GuideScreenProps> = ({ onNavigate }) => {
         className="guide-back"
         onClick={() => onNavigate("menu")}
       >
-        {t("header.playGame")}
+        {t("game.backToStage")}
       </button>
     </div>
   );

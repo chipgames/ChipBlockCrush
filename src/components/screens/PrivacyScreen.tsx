@@ -18,7 +18,7 @@ const SECTIONS = [
 const PrivacyScreen: React.FC<PrivacyScreenProps> = ({ onNavigate }) => {
   const { t } = useLanguage();
   return (
-    <div className="privacy-screen">
+    <div className="privacy-screen" role="main" aria-label={t("privacy.title")}>
       <h1 className="privacy-title">{t("privacy.title")}</h1>
       <p className="privacy-updated">{t("privacy.lastUpdated")}</p>
       <p className="privacy-intro">{t("privacy.intro")}</p>
@@ -39,7 +39,7 @@ const PrivacyScreen: React.FC<PrivacyScreenProps> = ({ onNavigate }) => {
         className="privacy-back"
         onClick={() => onNavigate("menu")}
       >
-        {t("header.playGame")}
+        {t("game.backToStage")}
       </button>
     </div>
   );

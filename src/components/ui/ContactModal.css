@@ -1,0 +1,119 @@
+.contact-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.contact-modal-box {
+  background: var(--bg-tertiary, #2a2a3e);
+  border: 2px solid var(--accent-success, #7fdfd4);
+  border-radius: 12px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.contact-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.contact-modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--accent-success, #7fdfd4);
+}
+
+.contact-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+  border-radius: 4px;
+  transition:
+    color 0.2s,
+    background 0.2s;
+}
+
+.contact-modal-close:hover {
+  color: var(--text-primary);
+  background: var(--bg-glass);
+}
+
+.contact-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.contact-modal-section {
+  margin-bottom: 20px;
+}
+
+.contact-modal-section:not(:last-child) {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 20px;
+}
+
+.contact-modal-section-title {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.contact-modal-section-content {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.contact-modal-email-block {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.contact-modal-email-instruction {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.contact-modal-email-item {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.contact-modal-email-label {
+  color: var(--text-secondary);
+}
+
+.contact-modal-email-link {
+  color: var(--accent-success, #7fdfd4);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.contact-modal-email-link:hover {
+  text-decoration: underline;
+}

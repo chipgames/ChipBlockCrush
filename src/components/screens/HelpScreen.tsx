@@ -19,7 +19,7 @@ const FAQ_KEYS = [
 const HelpScreen: React.FC<HelpScreenProps> = ({ onNavigate }) => {
   const { t } = useLanguage();
   return (
-    <div className="help-screen">
+    <div className="help-screen" role="main" aria-label={t("help.title")}>
       <h1 className="help-title">{t("help.title")}</h1>
       <p className="help-intro">{t("help.intro")}</p>
       <div className="help-faq">
@@ -35,7 +35,7 @@ const HelpScreen: React.FC<HelpScreenProps> = ({ onNavigate }) => {
         className="help-back"
         onClick={() => onNavigate("menu")}
       >
-        {t("header.playGame")}
+        {t("game.backToStage")}
       </button>
     </div>
   );

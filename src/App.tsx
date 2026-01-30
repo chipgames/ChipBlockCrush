@@ -10,6 +10,7 @@ import HelpScreen from "@/components/screens/HelpScreen";
 import AboutScreen from "@/components/screens/AboutScreen";
 import PrivacyScreen from "@/components/screens/PrivacyScreen";
 import GameScreen from "@/components/game/GameScreen";
+import ContactModal from "@/components/ui/ContactModal";
 import SEOHead from "@/components/seo/SEOHead";
 import { GameScreen as GameScreenType } from "@/types/ui";
 import { useTheme } from "@/hooks/useTheme";
@@ -62,6 +63,9 @@ const App: React.FC = () => {
 
   /** 모바일 전용: 메뉴·푸터 숨김 (화면 확대용) */
   const [menuFooterHidden, setMenuFooterHidden] = useState(false);
+
+  /** 문의하기 모달 표시 여부 */
+  const [contactModalOpen, setContactModalOpen] = useState(false);
 
   const handleNavigate = (screen: GameScreenType) => {
     setCurrentScreen(screen);
@@ -198,8 +202,15 @@ const App: React.FC = () => {
               />
             )}
           </GameContainer>
-          <Footer onNavigate={handleNavigate} />
+          <Footer
+            onNavigate={handleNavigate}
+            onOpenContact={() => setContactModalOpen(true)}
+          />
         </div>
+        <ContactModal
+          open={contactModalOpen}
+          onClose={() => setContactModalOpen(false)}
+        />
         {isMobile &&
         typeof window !== "undefined" &&
         (screen as unknown as ScreenWithOrientationLock).orientation ? (

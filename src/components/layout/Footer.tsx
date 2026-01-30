@@ -10,12 +10,13 @@ const APP_VERSION =
 
 interface FooterProps {
   onNavigate?: (screen: GameScreen) => void;
+  onOpenContact?: () => void;
 }
 
-const Footer: React.FC<FooterProps> = memo(({ onNavigate }) => {
+const Footer: React.FC<FooterProps> = memo(({ onNavigate, onOpenContact }) => {
   const { t } = useLanguage();
   return (
-    <footer className="footer" role="contentinfo">
+    <footer id="contact" className="footer" role="contentinfo">
       <div className="footer-content">
         <nav className="footer-links">
           {onNavigate ? (
@@ -31,9 +32,19 @@ const Footer: React.FC<FooterProps> = memo(({ onNavigate }) => {
               {t("footer.privacy")}
             </a>
           )}
-          <a href="#contact" className="footer-link">
-            {t("footer.contact")}
-          </a>
+          {onOpenContact ? (
+            <button
+              type="button"
+              className="footer-link footer-link-button"
+              onClick={onOpenContact}
+            >
+              {t("footer.contact")}
+            </button>
+          ) : (
+            <a href="#contact" className="footer-link">
+              {t("footer.contact")}
+            </a>
+          )}
         </nav>
         <div className="footer-center">
           <LanguageSelector />

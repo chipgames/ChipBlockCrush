@@ -100,6 +100,20 @@
     "section5Title": "5. Contact",
     "section5Content": "For questions about this Privacy Policy, please contact us via the Contact link below. This policy may be updated due to legal or service changes; we will notify users of material changes within the Service."
   },
+  "contactModal": {
+    "title": "Contact Us",
+    "close": "Close",
+    "section1Title": "Game-related inquiry",
+    "section1Content": "If you encounter problems during gameplay or have suggestions, please contact us at any time. We will respond as soon as possible.",
+    "section2Title": "Bug report",
+    "section2Content": "If you find a bug in the game, it would be helpful if you could tell us the situation in which it occurred and how to reproduce it.",
+    "section3Title": "Feedback",
+    "section3Content": "We welcome your feedback for game improvement. Please send us new feature suggestions or improvement ideas.",
+    "section4Title": "Contact information",
+    "section4Content": "If you have any game-related inquiries or suggestions, please contact us at any time. We will respond as quickly as possible.",
+    "emailInstruction": "If you have any questions about games, advertisements, personal information, or other inquiries, please contact us at the email below.",
+    "emailLabel": "Email"
+  },
   "footer": {
     "privacy": "Privacy Policy",
     "contact": "Contact",
