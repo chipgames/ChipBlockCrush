@@ -1,6 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useLanguage } from "@/hooks/useLanguage";
+import { SUPPORTED_LANGUAGES } from "@/constants/languages";
 
 interface SEOHeadProps {
   title?: string;
@@ -33,6 +34,14 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       <meta property="og:type" content="website" />
       <meta property="og:url" content={url + langParam} />
       <link rel="canonical" href={url + langParam} />
+      {SUPPORTED_LANGUAGES.map((lang) => (
+        <link
+          key={lang}
+          rel="alternate"
+          hrefLang={lang}
+          href={lang === "ko" ? url : `${url}?lang=${lang}`}
+        />
+      ))}
     </Helmet>
   );
 };
