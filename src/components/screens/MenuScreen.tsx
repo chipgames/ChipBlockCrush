@@ -32,11 +32,15 @@ const MenuScreen: React.FC<MenuScreenProps> = ({ onNavigate, onStartGame }) => {
     <div className="menu-screen">
       <div className="menu-logo-wrap">
         <img
-          src={`${import.meta.env.BASE_URL}ChipGames_Logo.png`}
-          alt={t("header.logo")}
-          className="menu-logo"
-          fetchPriority="high"
-          decoding="async"
+          {...({
+            src: `${import.meta.env.BASE_URL}ChipGames_Logo.png`,
+            alt: t("header.logo"),
+            className: "menu-logo",
+            decoding: "async",
+            fetchpriority: "high",
+          } as React.ImgHTMLAttributes<HTMLImageElement> & {
+            fetchpriority?: "high" | "low" | "auto";
+          })}
         />
       </div>
       <h1 className="menu-title">{t("header.gameTitle")}</h1>

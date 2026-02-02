@@ -40,6 +40,26 @@ const App: React.FC = () => {
     registerServiceWorker();
   }, []);
 
+  // AdSense: 로컬이 아닐 때만 동적 로드. 광고 차단 시 net::ERR_BLOCKED_BY_CLIENT 는 브라우저/확장 프로그램 차단으로 정상.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const host = window.location.hostname;
+    if (host === "localhost" || host === "127.0.0.1") return;
+    const existing = document.querySelector(
+      'script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]',
+    );
+    if (existing) return;
+    const script = document.createElement("script");
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    script.src =
+      "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2533613198240039";
+    script.onerror = () => {
+      script.remove();
+    };
+    document.head.appendChild(script);
+  }, []);
+
   const [currentScreen, setCurrentScreen] = useState<GameScreenType>("menu");
   const [currentStage, setCurrentStage] = useState<number | null>(null);
 

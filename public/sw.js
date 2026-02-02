@@ -42,8 +42,9 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = event.request.url;
   const scope = self.registration.scope;
+  if (!url.startsWith(scope)) return;
 
-  if (url.startsWith(scope) && isAssetRequest(url)) {
+  if (isAssetRequest(url)) {
     event.respondWith(
       caches.match(event.request).then((cached) => {
         if (cached) return cached;

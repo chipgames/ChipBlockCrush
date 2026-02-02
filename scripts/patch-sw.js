@@ -44,7 +44,8 @@ let precacheUrls = [];
 if (existsSync(distDir)) {
   precacheUrls = getFiles(distDir).map((f) => BASE_URL + f);
 }
-sw = sw.replace("__PRECACHE_URLS__", JSON.stringify(precacheUrls));
+const precacheJson = JSON.stringify(precacheUrls);
+sw = sw.replace(/__PRECACHE_URLS__/g, precacheJson);
 
 writeFileSync(swPath, sw);
 console.log("sw.js CACHE_NAME → chipblockcrush-v" + version);

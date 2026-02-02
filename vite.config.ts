@@ -38,7 +38,6 @@ export default defineConfig(({ command, mode }) => {
             if (id.includes("node_modules")) {
               if (id.includes("react-dom") || id.includes("react/"))
                 return "vendor";
-              if (id.includes("react-helmet-async")) return "helmet";
             }
             if (
               id.includes("GameScreen") ||
