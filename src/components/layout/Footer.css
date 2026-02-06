@@ -65,3 +65,23 @@
     order: 3;
   }
 }
+
+/* 모바일 가로 모드: 푸터 높이 최소화 */
+@media (orientation: landscape) and (max-height: 560px) {
+  .footer {
+    min-height: 40px;
+    padding: 0 8px;
+  }
+  
+  .footer-content {
+    gap: 4px;
+  }
+  
+  .footer-link {
+    font-size: 0.8rem;
+  }
+  
+  .footer-copyright {
+    font-size: 0.75rem;
+  }
+}

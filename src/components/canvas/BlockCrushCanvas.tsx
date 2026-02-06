@@ -400,9 +400,33 @@ const BlockCrushCanvas = forwardRef<
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
       const updateSize = () => {
-        const w = container.clientWidth;
-        const h = container.clientHeight;
-        const { width, height } = getCanvasSize(w, h);
+        // 컨테이너의 실제 크기 가져오기
+        let w = container.clientWidth;
+        let h = container.clientHeight;
+        
+        // 가로 모드에서 컨테이너 크기가 0이거나 비정상적인 경우, 실제 화면 크기 사용
+        if (isLandscapeMode && (w === 0 || h === 0 || w > h * 3)) {
+          // rotate(90deg)가 적용된 경우, 실제 가용 공간 계산
+          if (typeof window !== "undefined") {
+            // 가로 모드: 화면 높이가 실제 가용 너비, 화면 너비가 실제 가용 높이
+            // 하지만 CSS에서 이미 회전이 적용되어 있으므로, 컨테이너의 부모 크기 확인
+            const parent = container.parentElement;
+            if (parent) {
+              const parentRect = parent.getBoundingClientRect();
+              w = parentRect.width || window.innerWidth;
+              h = parentRect.height || window.innerHeight;
+            } else {
+              w = window.innerHeight;
+              h = window.innerWidth;
+            }
+          }
+        }
+        
+        // 최소 크기 보장
+        w = Math.max(w, 200);
+        h = Math.max(h, 112); // 200 * 9/16
+        
+        const { width, height } = getCanvasSize(w, h, isLandscapeMode);
         const dpr = window.devicePixelRatio || 1;
         canvas.width = width * dpr;
         canvas.height = height * dpr;
@@ -415,8 +439,18 @@ const BlockCrushCanvas = forwardRef<
       updateSize();
       const ro = new ResizeObserver(updateSize);
       ro.observe(container);
+      // 가로 모드일 때는 window resize도 감지
+      if (isLandscapeMode) {
+        window.addEventListener("resize", updateSize);
+        window.addEventListener("orientationchange", updateSize);
+        return () => {
+          ro.disconnect();
+          window.removeEventListener("resize", updateSize);
+          window.removeEventListener("orientationchange", updateSize);
+        };
+      }
       return () => ro.disconnect();
-    }, [draw]);
+    }, [draw, isLandscapeMode]);
 
     useEffect(() => {
       const canvas = canvasRef.current;

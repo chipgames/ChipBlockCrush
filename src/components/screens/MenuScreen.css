@@ -4,6 +4,17 @@
   margin: 0 auto;
   padding: 12px;
   position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* 모바일 가로 모드: 패딩 최소화하여 스크롤 없이 보이도록 */
+@media (orientation: landscape) and (max-height: 560px) {
+  .menu-screen {
+    padding: 4px;
+  }
 }
 
 /* 메뉴 콘텐츠 컨테이너 (가로/세로 모드 회전용) */

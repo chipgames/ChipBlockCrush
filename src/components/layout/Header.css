@@ -188,3 +188,23 @@
     z-index: 999;
   }
 }
+
+/* 모바일 가로 모드: 헤더 높이 최소화 */
+@media (orientation: landscape) and (max-height: 560px) {
+  .header {
+    height: 44px;
+    padding: 0 8px;
+  }
+  
+  .header-logo-img {
+    height: 32px;
+  }
+  
+  .header-nav {
+    top: 44px;
+  }
+  
+  .header-nav-overlay {
+    top: 44px;
+  }
+}

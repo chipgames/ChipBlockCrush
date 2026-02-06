@@ -4,6 +4,17 @@
   margin: 0 auto;
   padding: 12px;
   position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* 모바일 가로 모드: 패딩 최소화하여 스크롤 없이 보이도록 */
+@media (orientation: landscape) and (max-height: 560px) {
+  .game-screen {
+    padding: 4px;
+  }
 }
 
 /* 게임 보드 컨테이너 (가로/세로 모드 회전용) */
@@ -35,10 +46,15 @@
     width: 100%;
     height: 100%;
     max-width: none;
+    max-height: 100%;
     margin: 0;
+    padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
+    /* 가로 모드에서 잘리지 않도록 */
+    min-width: 0;
+    min-height: 0;
   }
 
   /* 가로 모드: 16:9 영역을 높이 100% 기준으로 맞추고, 가로는 비율대로 → flex로 중앙 정렬 */
@@ -46,10 +62,14 @@
     height: 100%;
     width: auto;
     max-width: 100%;
+    max-height: 100%;
     aspect-ratio: 16 / 9;
     margin: 0;
     flex-shrink: 0;
     font-size: clamp(11px, 2.8vmin, 18px);
+    /* 가로 모드에서 잘리지 않도록 크기 제한 */
+    min-width: 0;
+    min-height: 0;
   }
 
   .game-board-container.landscape-mode
@@ -61,30 +81,45 @@
     min-width: 0;
     min-height: 0;
     margin: 0;
+    /* canvas가 컨테이너를 넘지 않도록 */
+    max-width: 100%;
+    max-height: 100%;
   }
 }
 
 .game-area {
   width: 100%;
-  max-width: min(90vw, 1200px);
+  max-width: min(1200px, 60vw);
+  max-height: 100%;
   margin: 0 auto;
   background: var(--bg-card);
   border-radius: 16px;
   padding: 16px;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-md);
+  /* 가로 모드에서 잘리지 않도록 */
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .game-view-16-9 {
   width: 100%;
   aspect-ratio: 16 / 9;
-  max-width: min(90vw, 1200px);
+  max-width: min(1200px, 60vw);
+  max-height: 100%;
   margin: 0 auto;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--border-color);
   /* 캔버스 크기에 비례해 점수·메뉴·블록선택 스케일 */
   font-size: clamp(10px, 1.75vw, 16px);
+  /* 가로 모드에서 잘리지 않도록 */
+  min-width: 0;
+  min-height: 0;
 }
 
 .game-view-16-9 .block-crush-canvas-wrap {

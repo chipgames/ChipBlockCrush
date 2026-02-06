@@ -9,8 +9,44 @@
   padding: 12px;
 }
 
+/* 모바일 가로 모드: 스크롤 없이 메뉴, canvas, 푸터가 모두 보이도록 */
+@media (orientation: landscape) and (max-height: 768px) {
+  .game-container {
+    padding: 4px;
+    overflow: hidden;
+    justify-content: flex-start;
+  }
+  
+  .game-container > * {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 @media (max-width: 768px) {
   .game-container {
     padding: 8px;
+  }
+  
+  /* 모바일 가로 모드: 스크롤 없이 메뉴, canvas, 푸터가 모두 보이도록 */
+  @media (orientation: landscape) and (max-height: 560px) {
+    .game-container {
+      padding: 4px;
+      overflow: hidden;
+      justify-content: flex-start;
+    }
+    
+    .game-container > * {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
