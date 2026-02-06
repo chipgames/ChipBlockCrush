@@ -25,6 +25,13 @@
     align-items: center;
     justify-content: center;
   }
+  
+  /* 메뉴 숨김 시 가로 모드에서 패딩 제거하고 전체 화면 사용 */
+  .app-container.menu-footer-hidden .game-container {
+    padding: 0;
+    height: 100vh;
+    height: 100dvh;
+  }
 }
 
 @media (max-width: 768px) {

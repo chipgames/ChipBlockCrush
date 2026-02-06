@@ -52,6 +52,13 @@ body,
   display: none !important;
 }
 
+/* 메뉴 숨김 시 GameContainer가 전체 화면 사용 */
+.app-container.menu-footer-hidden .game-container {
+  height: 100vh;
+  height: 100dvh;
+  padding: 0;
+}
+
 /* 모바일 전용: 메뉴·푸터 숨기기/보기 토글 버튼 */
 .menu-footer-toggle {
   display: none;
