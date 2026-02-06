@@ -73,12 +73,20 @@ function getLayout(
   const rightPanelWidth = Math.max(56, 72 * scale);
   const menuBtnW = Math.max(56, 70 * scale);
   const menuBtnH = Math.max(22, 28 * scale);
-  const traySlotSize = Math.max(44, 52 * scale);
   const trayGap = 4;
 
   const availableW = width - rightPanelWidth - padding * 2;
   const availableH = height - topBarHeight - padding * 2;
   const cellSize = Math.min(availableW / gridSize, availableH / gridSize);
+  
+  // 캔버스 셀 크기에 비례하여 트레이 크기 계산 (모바일/PC 모두 적절한 비율 유지)
+  // 셀 크기의 약 2.5~3배 정도가 적절한 크기
+  const traySlotSizeBase = cellSize * 2.8;
+  // 최소/최대값 제한으로 너무 작거나 크지 않도록 보장
+  const traySlotSize = Math.max(
+    Math.max(44, cellSize * 1.8), // 모바일에서도 최소 셀 크기의 1.8배는 보장
+    Math.min(traySlotSizeBase, Math.min(width * 0.15, height * 0.18, 120)), // PC에서도 적절한 최대값
+  );
   const offsetX = padding + (availableW - cellSize * gridSize) / 2;
   const offsetY =
     topBarHeight + padding + (availableH - cellSize * gridSize) / 2;
@@ -91,8 +99,13 @@ function getLayout(
   };
 
   const trayRects: { x: number; y: number; w: number; h: number }[] = [];
+  // 오른쪽 여백을 추가하여 트레이가 화면 가장자리에 너무 붙지 않도록 함
+  const rightPadding = Math.max(padding, Math.min(width * 0.02, 24));
   const trayStartX =
-    width - rightPanelWidth + (rightPanelWidth - traySlotSize) / 2;
+    width -
+    rightPanelWidth +
+    (rightPanelWidth - traySlotSize) / 2 -
+    rightPadding;
   let trayY = topBarHeight + padding;
   for (let i = 0; i < blockCount; i++) {
     trayRects.push({
@@ -153,9 +166,7 @@ const BlockCrushCanvas = forwardRef<
         ? ASPECT_RATIO_LANDSCAPE
         : ASPECT_RATIO_PORTRAIT;
     const minHeight =
-      orientation === "landscape"
-        ? MIN_HEIGHT_LANDSCAPE
-        : MIN_HEIGHT_PORTRAIT;
+      orientation === "landscape" ? MIN_HEIGHT_LANDSCAPE : MIN_HEIGHT_PORTRAIT;
     const [size, setSize] = useState({ w: MIN_WIDTH, h: minHeight });
 
     useImperativeHandle(
@@ -195,12 +206,12 @@ const BlockCrushCanvas = forwardRef<
         // 세로 모드일 때는 가로/세로를 스왑하여 계산
         const effectiveW = orientation === "portrait" ? height : width;
         const effectiveH = orientation === "portrait" ? width : height;
-        
+
         const blockCount = Math.max(1, currentBlockIndices.length);
         const L = getLayout(effectiveW, effectiveH, gridSize, blockCount);
         layoutRef.current = L;
         onLayout?.({ cellSize: L.cellSize });
-        
+
         // 세로 모드일 때는 Canvas를 90도 회전하여 그리기
         if (orientation === "portrait") {
           ctx.save();
@@ -318,7 +329,12 @@ const BlockCrushCanvas = forwardRef<
           if (shape) {
             const rows = shape.length;
             const cols = shape[0]?.length ?? 0;
-            const cell = Math.min((r.w - 8) / cols, (r.h - 8) / rows, 14);
+            // PC에서 블록이 더 크게 보이도록 최대값 제한을 높임
+            const cell = Math.min(
+              (r.w - 8) / cols,
+              (r.h - 8) / rows,
+              Math.max(14, r.w * 0.3),
+            );
             const startX = r.x + (r.w - cols * cell) / 2;
             const startY = r.y + (r.h - rows * cell) / 2;
             ctx.fillStyle = getBlockColor(shapeIdx);
@@ -400,7 +416,7 @@ const BlockCrushCanvas = forwardRef<
           }
           ctx.globalAlpha = 1;
         }
-        
+
         if (orientation === "portrait") {
           ctx.restore();
         }
