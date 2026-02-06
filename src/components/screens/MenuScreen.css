@@ -1,91 +1,57 @@
 .menu-screen {
   width: 100%;
-  max-width: 480px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 32px 24px;
-  text-align: center;
+  padding: 12px;
+  position: relative;
 }
 
-.menu-logo-wrap {
-  margin-bottom: 20px;
-}
-
-.menu-logo {
-  height: 80px;
-  width: auto;
-  object-fit: contain;
-}
-
-.menu-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 8px;
-}
-
-.menu-desc {
-  font-size: 0.95rem;
-  color: var(--text-secondary);
-  margin-bottom: 28px;
-}
-
-.menu-play-btn {
-  display: block;
+/* 메뉴 콘텐츠 컨테이너 (가로/세로 모드 회전용) */
+.menu-content-container {
   width: 100%;
-  max-width: 280px;
-  margin: 0 auto 24px;
-  padding: 16px 32px;
-  background: var(--gradient-primary);
-  border: none;
-  border-radius: 14px;
-  color: #fff;
-  font-size: 1.2rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+  transition: transform 0.3s ease;
+  position: relative;
 }
 
-.menu-play-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+/* 모바일에서 가로 모드일 때 메뉴 콘텐츠 회전 및 화면 중앙 정렬 */
+@media (max-width: 768px) {
+  .menu-content-container.landscape-mode {
+    transform: rotate(90deg);
+    width: 100vh;
+    height: 100vw;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -50vw;
+    margin-left: -50vh;
+    transform-origin: center center;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .menu-content-container.landscape-mode .menu-content-16-9 {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+    margin: 0;
+    flex-shrink: 0;
+  }
 }
 
-.menu-links {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.menu-link {
-  padding: 10px 20px;
-  background: var(--bg-glass);
+/* 16:9 비율 메뉴 콘텐츠 영역 (게임 Canvas와 동일한 구조) */
+.menu-content-16-9 {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-width: min(90vw, 1200px);
+  margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
   border: 1px solid var(--border-color);
-  border-radius: 10px;
-  color: var(--text-primary);
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition:
-    background 0.2s,
-    border-color 0.2s;
-}
-
-.menu-link:hover {
-  background: var(--bg-tertiary);
-  border-color: var(--border-hover);
-}
-
-.menu-link-download {
-  color: var(--accent-primary);
-  border-color: var(--accent-primary);
-}
-
-.menu-link-download:hover {
-  background: var(--accent-primary);
-  color: #fff;
-  border-color: var(--accent-primary);
+  position: relative;
+  /* 패딩 제거: Canvas가 부모를 꽉 채우도록 */
 }
 
 /* iOS 앱 설치 안내 오버레이 */
@@ -128,3 +94,5 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+/* 가로/세로 모드 토글 버튼은 GameScreen.css의 .orientation-toggle-button 사용 */

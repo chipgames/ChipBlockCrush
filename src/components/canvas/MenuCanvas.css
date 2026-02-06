@@ -1,0 +1,33 @@
+.menu-canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: min(90vw, 1200px);
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+/* menu-content-16-9 안에서는 wrap이 부모를 꽉 채우도록 (16:9 비율 자동 유지) */
+.menu-content-16-9 .menu-canvas-wrap {
+  max-width: none;
+  aspect-ratio: none;
+  width: 100%;
+  height: 100%;
+}
+
+.menu-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+}
+
+.menu-canvas:focus {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
