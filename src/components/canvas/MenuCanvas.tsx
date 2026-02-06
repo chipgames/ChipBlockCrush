@@ -5,8 +5,15 @@ import React, {
   useState,
   memo,
 } from "react";
-import { getCanvasSize } from "@/constants/canvasConfig";
+import { useCanvasOrientation } from "@/contexts/CanvasOrientationContext";
 import "./MenuCanvas.css";
+
+const ASPECT_RATIO_LANDSCAPE = 16 / 9;
+const ASPECT_RATIO_PORTRAIT = 9 / 16;
+const MAX_WIDTH = 1200;
+const MIN_WIDTH = 280;
+const MIN_HEIGHT_LANDSCAPE = Math.floor(MIN_WIDTH / ASPECT_RATIO_LANDSCAPE);
+const MIN_HEIGHT_PORTRAIT = Math.floor(MIN_WIDTH / ASPECT_RATIO_PORTRAIT);
 
 export interface MenuButton {
   id: string;
@@ -21,7 +28,6 @@ interface MenuCanvasProps {
   subtitle: string;
   buttons: MenuButton[];
   onButtonClick: (buttonId: string) => void;
-  isLandscapeMode?: boolean;
 }
 
 const MenuCanvas: React.FC<MenuCanvasProps> = ({
@@ -30,12 +36,21 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
   subtitle,
   buttons,
   onButtonClick,
-  isLandscapeMode = false,
 }) => {
+  const { orientation } = useCanvasOrientation();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const logoImageRef = useRef<HTMLImageElement | null>(null);
   const [logoLoaded, setLogoLoaded] = useState(false);
+  const aspectRatio =
+    orientation === "landscape"
+      ? ASPECT_RATIO_LANDSCAPE
+      : ASPECT_RATIO_PORTRAIT;
+  const minHeight =
+    orientation === "landscape"
+      ? MIN_HEIGHT_LANDSCAPE
+      : MIN_HEIGHT_PORTRAIT;
+  const [size, setSize] = useState({ w: MIN_WIDTH, h: minHeight });
   const layoutRef = useRef<{
     width: number;
     height: number;
@@ -74,31 +89,35 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
   // 레이아웃 계산 (16:9 비율 기준, 모바일 친화적 - 모든 요소가 Canvas 안에 들어가도록)
   const calculateLayout = useCallback(
     (width: number, height: number) => {
+      // 세로 모드일 때는 가로/세로를 스왑하여 계산
+      const effectiveW = orientation === "portrait" ? height : width;
+      const effectiveH = orientation === "portrait" ? width : height;
+      
       // 모바일 기준 스케일: 작은 화면에서도 적절한 크기 유지
       // 기준: 가로 400px 또는 세로 225px (16:9 비율)
       const baseWidth = 400;
       const baseHeight = 225;
-      let scale = Math.min(width / baseWidth, height / baseHeight, 1.5);
+      let scale = Math.min(effectiveW / baseWidth, effectiveH / baseHeight, 1.5);
       
       // 패딩: 화면 크기에 비례하되 최소값 보장
-      const padding = Math.max(8, Math.min(width * 0.03, height * 0.03));
+      const padding = Math.max(8, Math.min(effectiveW * 0.03, effectiveH * 0.03));
       
       // 예상 요소 높이 계산 (버튼 개수는 나중에 확인)
       const estimatedLinkButtonCount = 4; // 가이드, 도움말, 게임소개, 다운로드
       
       // 초기 크기 계산
-      let logoHeight = Math.max(40, Math.min(70 * scale, height * 0.12));
-      let titleFontSize = Math.max(18, Math.min(28 * scale, width * 0.07));
-      let subtitleFontSize = Math.max(11, Math.min(16 * scale, width * 0.04));
-      let playButtonFontSize = Math.max(14, Math.min(22 * scale, width * 0.055));
-      let linkButtonFontSize = Math.max(11, Math.min(14 * scale, width * 0.035));
+      let logoHeight = Math.max(40, Math.min(70 * scale, effectiveH * 0.12));
+      let titleFontSize = Math.max(18, Math.min(28 * scale, effectiveW * 0.07));
+      let subtitleFontSize = Math.max(11, Math.min(16 * scale, effectiveW * 0.04));
+      let playButtonFontSize = Math.max(14, Math.min(22 * scale, effectiveW * 0.055));
+      let linkButtonFontSize = Math.max(11, Math.min(14 * scale, effectiveW * 0.035));
       
       let titleY = padding + logoHeight;
       let subtitleY = titleY + titleFontSize;
-      let playButtonH = Math.max(40, Math.min(50 * scale, height * 0.07));
+      let playButtonH = Math.max(40, Math.min(50 * scale, effectiveH * 0.07));
       let playButtonY = subtitleY + subtitleFontSize;
-      let linkButtonH = Math.max(28, Math.min(38 * scale, height * 0.06));
-      let linkButtonGap = Math.max(6, Math.min(12 * scale, width * 0.015));
+      let linkButtonH = Math.max(28, Math.min(38 * scale, effectiveH * 0.06));
+      let linkButtonGap = Math.max(6, Math.min(12 * scale, effectiveW * 0.015));
       let linksY = playButtonY + playButtonH;
       
       // 요소 간 간격 계산
@@ -113,20 +132,20 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
                          buttonLinksGap + linkButtonH;
       
       // Canvas 높이를 초과하면 스케일 조정
-      if (totalHeight > height - padding * 2) {
-        const availableHeight = height - padding * 2;
+      if (totalHeight > effectiveH - padding * 2) {
+        const availableHeight = effectiveH - padding * 2;
         const scaleFactor = availableHeight / totalHeight;
         scale *= scaleFactor * 0.95; // 여유 공간 확보
         
         // 스케일 조정 후 재계산
-        logoHeight = Math.max(35, Math.min(70 * scale, height * 0.12));
-        titleFontSize = Math.max(16, Math.min(28 * scale, width * 0.07));
-        subtitleFontSize = Math.max(10, Math.min(16 * scale, width * 0.04));
-        playButtonFontSize = Math.max(13, Math.min(22 * scale, width * 0.055));
-        linkButtonFontSize = Math.max(10, Math.min(14 * scale, width * 0.035));
-        playButtonH = Math.max(36, Math.min(50 * scale, height * 0.07));
-        linkButtonH = Math.max(26, Math.min(38 * scale, height * 0.06));
-        linkButtonGap = Math.max(5, Math.min(12 * scale, width * 0.015));
+        logoHeight = Math.max(35, Math.min(70 * scale, effectiveH * 0.12));
+        titleFontSize = Math.max(16, Math.min(28 * scale, effectiveW * 0.07));
+        subtitleFontSize = Math.max(10, Math.min(16 * scale, effectiveW * 0.04));
+        playButtonFontSize = Math.max(13, Math.min(22 * scale, effectiveW * 0.055));
+        linkButtonFontSize = Math.max(10, Math.min(14 * scale, effectiveW * 0.035));
+        playButtonH = Math.max(36, Math.min(50 * scale, effectiveH * 0.07));
+        linkButtonH = Math.max(26, Math.min(38 * scale, effectiveH * 0.06));
+        linkButtonGap = Math.max(5, Math.min(12 * scale, effectiveW * 0.015));
         
         // 간격 재계산
         const recalcLogoTitleGap = Math.max(12, 20 * scale);
@@ -141,7 +160,7 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
                                   recalcButtonLinksGap + linkButtonH;
         
         // 중앙 정렬을 위한 시작 Y 위치 계산
-        const startY = (height - recalcTotalHeight) / 2;
+        const startY = (effectiveH - recalcTotalHeight) / 2;
         
         // 각 요소의 Y 위치 계산 (중앙 기준)
         const logoY = startY;
@@ -172,7 +191,7 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
         };
       } else {
         // Canvas 높이 내에 들어가는 경우에도 중앙 정렬
-        const startY = (height - totalHeight) / 2;
+        const startY = (effectiveH - totalHeight) / 2;
         
         const logoY = startY;
         titleY = logoY + logoHeight + logoTitleGap;
@@ -202,7 +221,7 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
         };
       }
     },
-    [],
+    [orientation],
   );
 
   // Canvas 그리기
@@ -210,14 +229,26 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
     (ctx: CanvasRenderingContext2D, width: number, height: number) => {
       if (!layoutRef.current) return;
 
+      // 세로 모드일 때는 가로/세로를 스왑하여 계산
+      const effectiveW = orientation === "portrait" ? height : width;
+      const effectiveH = orientation === "portrait" ? width : height;
+
       const L = layoutRef.current;
       const { padding, logoHeight, logoY, fontSize } = L;
+      
+      // 세로 모드일 때는 Canvas를 90도 회전하여 그리기
+      if (orientation === "portrait") {
+        ctx.save();
+        ctx.translate(width / 2, height / 2);
+        ctx.rotate(Math.PI / 2);
+        ctx.translate(-height / 2, -width / 2);
+      }
 
       // 배경
       ctx.fillStyle = getComputedStyle(document.documentElement)
         .getPropertyValue("--bg-card")
         .trim() || "#36354D";
-      ctx.fillRect(0, 0, width, height);
+      ctx.fillRect(0, 0, effectiveW, effectiveH);
 
       // 테두리
       ctx.strokeStyle =
@@ -225,12 +256,12 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
           .getPropertyValue("--border-color")
           .trim() || "rgba(255,255,255,0.1)";
       ctx.lineWidth = 2;
-      ctx.strokeRect(1, 1, width - 2, height - 2);
+      ctx.strokeRect(1, 1, effectiveW - 2, effectiveH - 2);
 
       // 로고 이미지 (중앙 정렬된 위치)
       if (logoLoaded && logoImageRef.current) {
         const logoW = (logoImageRef.current.width / logoImageRef.current.height) * logoHeight;
-        const logoX = (width - logoW) / 2;
+        const logoX = (effectiveW - logoW) / 2;
         ctx.drawImage(logoImageRef.current, logoX, logoY, logoW, logoHeight);
       }
 
@@ -242,7 +273,7 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
       ctx.font = `700 ${fontSize.title}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "top";
-      ctx.fillText(title, width / 2, L.titleY);
+      ctx.fillText(title, effectiveW / 2, L.titleY);
 
       // 부제목
       ctx.fillStyle =
@@ -250,18 +281,18 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
           .getPropertyValue("--text-secondary")
           .trim() || "rgba(255,255,255,0.7)";
       ctx.font = `${fontSize.subtitle}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-      ctx.fillText(subtitle, width / 2, L.subtitleY);
+      ctx.fillText(subtitle, effectiveW / 2, L.subtitleY);
 
       // 게임하기 버튼 (Primary)
       const primaryButton = buttons.find((b) => b.isPrimary);
       if (primaryButton) {
         // 모바일에서도 충분한 크기 유지, Canvas 너비에 맞게 조정
-        const availableWidth = width - L.padding * 2;
+        const availableWidth = effectiveW - L.padding * 2;
         const buttonW = Math.max(availableWidth * 0.6, Math.min(availableWidth * 0.8, 280));
-        const buttonX = (width - buttonW) / 2;
+        const buttonX = (effectiveW - buttonW) / 2;
         const buttonY = L.playButtonY;
         const buttonH = L.playButtonH;
-        const radius = Math.max(10, Math.min(14, width * 0.035));
+        const radius = Math.max(10, Math.min(14, effectiveW * 0.035));
 
         // 그라데이션 배경
         const gradient = ctx.createLinearGradient(
@@ -303,8 +334,8 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
       if (linkButtons.length > 0) {
         // 각 버튼의 실제 너비 계산 (Canvas 너비에 맞게 조정)
         const buttonWidths: number[] = [];
-        const availableWidth = width - L.padding * 2;
-        const maxButtonWidth = Math.min(availableWidth / linkButtons.length - L.linkButtonGap, width * 0.2);
+        const availableWidth = effectiveW - L.padding * 2;
+        const maxButtonWidth = Math.min(availableWidth / linkButtons.length - L.linkButtonGap, effectiveW * 0.2);
         
         linkButtons.forEach((button) => {
           const textWidth = fontSize.linkButton * button.label.length * 0.6;
@@ -318,7 +349,7 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
         }, 0);
         
         // Canvas 중앙 정렬, 너비 초과 시 간격 조정
-        let currentX = (width - totalButtonWidth) / 2;
+        let currentX = (effectiveW - totalButtonWidth) / 2;
         let adjustedGap = L.linkButtonGap;
         if (currentX < L.padding) {
           // 너비가 초과하면 간격을 줄임
@@ -328,7 +359,7 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
           const recalculatedTotalWidth = buttonWidths.reduce((sum, w, i) => {
             return sum + w + (i > 0 ? adjustedGap : 0);
           }, 0);
-          currentX = (width - recalculatedTotalWidth) / 2;
+          currentX = (effectiveW - recalculatedTotalWidth) / 2;
         }
 
         linkButtons.forEach((button, index) => {
@@ -390,45 +421,71 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
           currentX += buttonW + (index < linkButtons.length - 1 ? adjustedGap : 0);
         });
       }
+      
+      if (orientation === "portrait") {
+        ctx.restore();
+      }
     },
-    [logoLoaded, title, subtitle, buttons],
+    [logoLoaded, title, subtitle, buttons, orientation],
   );
 
-  // 리사이즈 및 그리기 (BlockCrushCanvas와 동일한 방식)
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
     if (!container || !canvas) return;
-    const ctx = canvas.getContext("2d");
+
+    const updateSize = () => {
+      // CSS aspect-ratio가 적용된 컨테이너의 실제 크기 사용
+      const cw = Math.max(container.clientWidth || 0, MIN_WIDTH);
+      const ch = Math.max(container.clientHeight || 0, minHeight);
+
+      // 선택된 비율 강제 유지
+      const maxW = Math.min(cw, MAX_WIDTH);
+      const idealH = maxW / aspectRatio;
+      let w = maxW;
+      let h = idealH;
+
+      // 높이가 제한되면 너비를 비율에 맞춤
+      if (ch < idealH) {
+        h = ch;
+        w = h * aspectRatio;
+        // 너비가 컨테이너를 넘지 않도록
+        if (w > cw) {
+          w = cw;
+          h = w / aspectRatio;
+        }
+      }
+
+      w = Math.max(MIN_WIDTH, Math.floor(w));
+      h = Math.max(minHeight, Math.floor(h));
+      setSize({ w, h });
+    };
+
+    updateSize();
+    const ro = new ResizeObserver(updateSize);
+    ro.observe(container);
+    return () => ro.disconnect();
+  }, [aspectRatio, minHeight]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const baseDpr = window.devicePixelRatio || 1;
+    const dpr = baseDpr;
+    canvas.width = size.w * dpr;
+    canvas.height = size.h * dpr;
+    canvas.style.width = `${size.w}px`;
+    canvas.style.height = `${size.h}px`;
+
+    const ctx = canvas.getContext("2d", {
+      alpha: true,
+      willReadFrequently: false,
+    });
     if (!ctx) return;
-
-    const updateCanvas = () => {
-      // clientWidth/clientHeight 사용 (패딩/보더 제외한 내부 크기)
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      const { width, height } = getCanvasSize(w, h);
-      const dpr = window.devicePixelRatio || 1;
-
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      
-      // Transform 초기화 후 스케일 적용
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
-      calculateLayout(width, height);
-      draw(ctx, width, height);
-    };
-
-    updateCanvas();
-    const resizeObserver = new ResizeObserver(updateCanvas);
-    resizeObserver.observe(container);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [calculateLayout, draw]);
+    ctx.scale(dpr, dpr);
+    calculateLayout(size.w, size.h);
+    draw(ctx, size.w, size.h);
+  }, [size, calculateLayout, draw]);
 
   // 클릭 처리
   const handleClick = useCallback(
@@ -441,20 +498,21 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
       let px = e.clientX - rect.left;
       let py = e.clientY - rect.top;
 
-      // 가로 모드 좌표 변환
-      if (isLandscapeMode) {
+      const L = layoutRef.current;
+      if (!L) return;
+      const { padding, fontSize } = L;
+      
+      // 세로 모드일 때는 좌표 변환 (Canvas가 90도 회전되어 있음)
+      let effectivePx = px;
+      let effectivePy = py;
+      if (orientation === "portrait") {
         const W = parseInt(canvas.style.width || "0", 10);
         const H = parseInt(canvas.style.height || "0", 10);
         if (W && H) {
-          const aabbX = e.clientX - rect.left;
-          const aabbY = e.clientY - rect.top;
-          px = aabbY;
-          py = H - aabbX;
+          effectivePx = py;
+          effectivePy = W - px;
         }
       }
-
-      const L = layoutRef.current;
-      const { padding, fontSize } = L;
 
       // Primary 버튼 클릭 체크
       const primaryButton = buttons.find((b) => b.isPrimary);
@@ -464,10 +522,10 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
         const buttonX = (L.width - buttonW) / 2;
         const buttonY = L.playButtonY;
         if (
-          px >= buttonX &&
-          px <= buttonX + buttonW &&
-          py >= buttonY &&
-          py <= buttonY + L.playButtonH
+          effectivePx >= buttonX &&
+          effectivePx <= buttonX + buttonW &&
+          effectivePy >= buttonY &&
+          effectivePy <= buttonY + L.playButtonH
         ) {
           onButtonClick(primaryButton.id);
           return;
@@ -509,10 +567,10 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
             const buttonW = buttonWidths[i];
             const buttonY = L.linksY;
             if (
-              px >= currentX &&
-              px <= currentX + buttonW &&
-              py >= buttonY &&
-              py <= buttonY + L.linkButtonH
+              effectivePx >= currentX &&
+              effectivePx <= currentX + buttonW &&
+              effectivePy >= buttonY &&
+              effectivePy <= buttonY + L.linkButtonH
             ) {
               onButtonClick(button.id);
               return;
@@ -526,10 +584,10 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
             const buttonW = buttonWidths[i];
             const buttonY = L.linksY;
             if (
-              px >= currentX &&
-              px <= currentX + buttonW &&
-              py >= buttonY &&
-              py <= buttonY + L.linkButtonH
+              effectivePx >= currentX &&
+              effectivePx <= currentX + buttonW &&
+              effectivePy >= buttonY &&
+              effectivePy <= buttonY + L.linkButtonH
             ) {
               onButtonClick(button.id);
               return;
@@ -539,7 +597,7 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
         }
       }
     },
-    [buttons, onButtonClick, isLandscapeMode],
+    [buttons, onButtonClick, orientation],
   );
 
   const touchStartRef = useRef<{ x: number; y: number; t: number } | null>(
@@ -568,19 +626,20 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
         let px = e.changedTouches[0].clientX - rect.left;
         let py = e.changedTouches[0].clientY - rect.top;
 
-        if (isLandscapeMode) {
+        const L = layoutRef.current;
+        const { padding, fontSize } = L;
+        
+        // 세로 모드일 때는 좌표 변환 (Canvas가 90도 회전되어 있음)
+        let effectivePx = px;
+        let effectivePy = py;
+        if (orientation === "portrait") {
           const W = parseInt(canvas.style.width || "0", 10);
           const H = parseInt(canvas.style.height || "0", 10);
           if (W && H) {
-            const aabbX = e.changedTouches[0].clientX - rect.left;
-            const aabbY = e.changedTouches[0].clientY - rect.top;
-            px = aabbY;
-            py = H - aabbX;
+            effectivePx = py;
+            effectivePy = W - px;
           }
         }
-
-        const L = layoutRef.current;
-        const { padding, fontSize } = L;
 
         const primaryButton = buttons.find((b) => b.isPrimary);
         if (primaryButton) {
@@ -589,10 +648,10 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
           const buttonX = (L.width - buttonW) / 2;
           const buttonY = L.playButtonY;
           if (
-            px >= buttonX &&
-            px <= buttonX + buttonW &&
-            py >= buttonY &&
-            py <= buttonY + L.playButtonH
+            effectivePx >= buttonX &&
+            effectivePx <= buttonX + buttonW &&
+            effectivePy >= buttonY &&
+            effectivePy <= buttonY + L.playButtonH
           ) {
             onButtonClick(primaryButton.id);
             return;
@@ -631,10 +690,10 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
               const buttonW = buttonWidths[i];
               const buttonY = L.linksY;
               if (
-                px >= currentX &&
-                px <= currentX + buttonW &&
-                py >= buttonY &&
-                py <= buttonY + L.linkButtonH
+                effectivePx >= currentX &&
+                effectivePx <= currentX + buttonW &&
+                effectivePy >= buttonY &&
+                effectivePy <= buttonY + L.linkButtonH
               ) {
                 onButtonClick(button.id);
                 return;
@@ -647,10 +706,10 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
               const buttonW = buttonWidths[i];
               const buttonY = L.linksY;
               if (
-                px >= currentX &&
-                px <= currentX + buttonW &&
-                py >= buttonY &&
-                py <= buttonY + L.linkButtonH
+                effectivePx >= currentX &&
+                effectivePx <= currentX + buttonW &&
+                effectivePy >= buttonY &&
+                effectivePy <= buttonY + L.linkButtonH
               ) {
                 onButtonClick(button.id);
                 return;
@@ -661,14 +720,18 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
         }
       }
     },
-    [buttons, onButtonClick, isLandscapeMode],
+    [buttons, onButtonClick, orientation],
   );
 
   return (
-    <div ref={containerRef} className="menu-canvas-wrap">
+    <div
+      ref={containerRef}
+      className="game-canvas-wrapper"
+      data-orientation={orientation}
+    >
       <canvas
         ref={canvasRef}
-        className="menu-canvas"
+        className="game-canvas"
         onClick={handleClick}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}

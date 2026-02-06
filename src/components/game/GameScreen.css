@@ -1,501 +1,160 @@
 .game-screen {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 12px;
-  position: relative;
   height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-}
-
-/* 모바일 가로 모드: 패딩 최소화하여 스크롤 없이 보이도록 */
-@media (orientation: landscape) and (max-height: 560px) {
-  .game-screen {
-    padding: 4px;
-  }
-}
-
-/* 게임 보드 컨테이너 (가로/세로 모드 회전용) */
-.game-board-container {
-  width: 100%;
-  transition: transform 0.3s ease;
+  padding: clamp(12px, 2.5vmin, 24px);
+  padding-left: max(clamp(12px, 2.5vmin, 24px), env(safe-area-inset-left));
+  padding-right: max(clamp(12px, 2.5vmin, 24px), env(safe-area-inset-right));
+  padding-bottom: max(clamp(12px, 2.5vmin, 24px), env(safe-area-inset-bottom));
   position: relative;
 }
 
-/* 모바일에서 가로 모드일 때 게임 보드 회전 및 화면 중앙 정렬 */
-@media (max-width: 768px) {
-  .game-board-container.landscape-mode {
-    transform: rotate(90deg);
-    width: 100vh;
-    height: 100vw;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    margin-top: -50vw;
-    margin-left: -50vh;
-    transform-origin: center center;
-    z-index: 10;
-    display: flex;
+@media (max-height: 560px) {
+  .game-screen {
+    padding: 6px;
+    justify-content: flex-start;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .game-screen .game-board {
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    flex: 1;
+  }
+}
+
+.game-board {
+  width: 100%;
+  min-width: 280px;
+  max-width: min(1200px, 94vw);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+
+@media (max-height: 560px) {
+  .game-board {
     align-items: center;
-    justify-content: center;
-  }
-
-  .game-board-container.landscape-mode .game-area {
-    width: 100%;
-    height: 100%;
-    max-width: none;
-    max-height: 100%;
-    margin: 0;
-    padding: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* 가로 모드에서 잘리지 않도록 */
-    min-width: 0;
-    min-height: 0;
-  }
-
-  /* 메뉴 숨김 시 가로 모드에서 패딩 제거 */
-  .app-container.menu-footer-hidden
-    .game-board-container.landscape-mode
-    .game-area {
-    padding: 0;
-  }
-
-  /* 가로 모드: 16:9 영역을 높이 100% 기준으로 맞추고, 가로는 비율대로 → flex로 중앙 정렬 */
-  .game-board-container.landscape-mode .game-view-16-9 {
-    height: 100%;
-    width: auto;
-    max-width: 100%;
-    max-height: 100%;
-    aspect-ratio: 16 / 9;
-    margin: 0;
-    flex-shrink: 0;
-    font-size: clamp(11px, 2.8vmin, 18px);
-    /* 가로 모드에서 잘리지 않도록 크기 제한 */
-    min-width: 0;
-    min-height: 0;
-  }
-
-  /* 메뉴 숨김 시 가로 모드에서 game-view-16-9의 max-width 제한 완전 제거 */
-  .app-container.menu-footer-hidden
-    .game-board-container.landscape-mode
-    .game-view-16-9 {
-    max-width: 100% !important;
-    width: 100%;
-    height: 100%;
-  }
-
-  .game-board-container.landscape-mode
-    .game-view-16-9
-    .block-crush-canvas-wrap {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    min-width: 0;
-    min-height: 0;
-    margin: 0;
-    /* canvas가 컨테이너를 넘지 않도록 */
-    max-width: 100%;
-    max-height: 100%;
   }
 }
 
 .game-area {
   width: 100%;
-  max-width: min(1200px, 60vw);
-  max-height: 100%;
-  margin: 0 auto;
-  background: var(--bg-card);
-  border-radius: 16px;
-  padding: 16px;
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-md);
-  /* 가로 모드에서 잘리지 않도록 */
-  min-width: 0;
-  min-height: 0;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-/* 메뉴 숨김 시 가로 모드에서 game-area가 전체 화면 사용 */
-@media (orientation: landscape) and (max-height: 768px) {
-  .app-container.menu-footer-hidden .game-area {
-    max-width: 100%;
-    max-height: 100%;
-    width: 100%;
-    height: 100%;
-    padding: 4px;
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
+.game-area.game-over {
+  opacity: 0.7;
+}
+
+/* 게임 오버 오버레이 */
+.game-screen-complete {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-overlay);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(20px, 4vmin, 28px);
+  padding: clamp(20px, 4vmin, 32px);
+  backdrop-filter: blur(6px);
+  animation: gameCompleteFadeIn 0.35s ease-out;
+}
+
+@keyframes gameCompleteFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
-.game-view-16-9 {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  max-width: min(1200px, 79vw);
-  max-height: 100%;
-  margin: 0 auto;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-  /* 캔버스 크기에 비례해 점수·메뉴·블록선택 스케일 */
-  font-size: clamp(10px, 1.75vw, 16px);
-  /* 가로 모드에서 잘리지 않도록 */
-  min-width: 0;
-  min-height: 0;
+.game-screen-complete p {
+  font-size: clamp(1.35rem, 4vmin, 1.75rem);
+  font-weight: 700;
+  color: var(--accent-success);
+  letter-spacing: 0.02em;
+  text-align: center;
+  animation: gameCompletePop 0.4s ease-out 0.1s both;
 }
 
-.game-view-16-9 .block-crush-canvas-wrap {
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  aspect-ratio: none;
-  margin: 0;
-}
-
-.game-ui-overlay {
-  position: absolute;
-  pointer-events: none;
-}
-
-.game-ui-overlay > * {
-  pointer-events: auto;
-}
-
-.game-ui-left {
-  top: 2%;
-  left: 2%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.4em;
-  padding: 0.5em 0.75em;
-  background: var(--bg-card);
-  border-radius: 0.6em;
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-md);
-}
-
-.game-block-tray {
-  top: 2%;
-  right: 2%;
+.game-screen-complete-stats {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4em;
-  width: 18%;
-  min-width: 4.5em;
-  max-width: 6em;
-  padding: 0.5em;
-  background: var(--bg-glass);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 0.6em;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  gap: 6px;
+  font-size: clamp(0.9rem, 2.2vmin, 1rem);
+  color: var(--text-secondary);
+  animation: gameCompletePop 0.4s ease-out 0.18s both;
 }
 
-.game-score {
-  font-weight: 600;
-  color: var(--text-primary);
-  font-size: 1em;
+.game-screen-stars {
+  font-size: clamp(1.25rem, 3.5vmin, 1.5rem);
+  letter-spacing: 0.15em;
+  color: var(--accent-warning, #ffb300);
 }
 
-.game-back-btn {
-  padding: 0.45em 0.9em;
-  background: var(--bg-glass);
+@keyframes gameCompletePop {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.game-screen-complete-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(10px, 2vmin, 14px);
+  justify-content: center;
+}
+
+.game-screen-complete-actions button {
+  padding: clamp(10px, 2vmin, 14px) clamp(20px, 4vmin, 28px);
+  border-radius: 10px;
   border: 1px solid var(--border-color);
-  border-radius: 0.6em;
+  background: var(--bg-card);
   color: var(--text-primary);
   cursor: pointer;
-  font-size: 0.9em;
-  transition:
-    background 0.2s,
-    border-color 0.2s;
+  font-size: clamp(0.9rem, 2vmin, 1rem);
+  font-weight: 500;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-
-.game-back-btn:hover {
-  background: var(--bg-tertiary);
-  border-color: var(--border-hover);
-}
-
-.game-area.game-over .game-block-preview {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.game-blocks-label {
-  font-size: 0.85em;
-  color: var(--text-secondary);
-  margin-bottom: 0.2em;
-  text-align: center;
-}
-
-.game-block-tray .game-blocks-label {
-  font-size: 0.7em;
-  line-height: 1.2;
-  text-align: center;
-}
-
-.game-blocks-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.game-block-tray .game-blocks-row {
-  flex-direction: column;
-  gap: 0.4em;
-  align-items: center;
-}
-
-.game-block-tray .game-block-preview {
-  padding: 0.35em;
-  background: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: 0.5em;
-  box-shadow: none;
-}
-
-.game-block-tray .block-preview-svg {
-  width: 1.75em;
-  height: auto;
-  max-width: 100%;
-}
-
-.game-block-tray .game-block-preview:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.15);
-  transform: scale(1.02);
-}
-
-:root[data-theme="light"]
-  .game-block-tray
-  .game-block-preview:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.04);
-}
-
-.game-block-preview {
-  padding: 8px;
-  background: var(--bg-tertiary);
-  border: 2px solid var(--border-color);
-  border-radius: 12px;
-  cursor: grab;
-  transition:
-    transform 0.2s,
-    border-color 0.2s,
-    box-shadow 0.2s,
-    background 0.2s;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: none;
-}
-
-.game-block-preview:active {
-  cursor: grabbing;
-}
-
-.game-block-preview:hover:not(:disabled) {
-  border-color: var(--border-hover);
-  transform: scale(1.05);
-}
-
-.game-block-preview.selected {
+.game-screen-complete-actions button:hover {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(168, 181, 255, 0.3);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+.game-screen-complete-actions button.primary {
+  background: var(--gradient-primary);
+  border: none;
+  color: #fff;
+}
+.game-screen-complete-actions button.primary:hover {
+  box-shadow: 0 4px 16px rgba(124, 138, 255, 0.35);
 }
 
-.game-block-tray .game-block-preview.selected {
-  background: rgba(168, 181, 255, 0.12);
-}
-
-.game-block-preview.dragging {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
+/* 드래그 고스트 블록 */
 .game-drag-ghost {
   position: fixed;
   pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
-}
-
-/* 가로 모드: 게임 보드가 rotate(90deg) 시계방향이므로 고스트도 rotate(90deg)로 같은 방향 맞춤 */
-.game-drag-ghost.landscape-mode {
-  transform: translate(-50%, -50%) rotate(90deg);
-  transform-origin: center center;
-}
-
-.block-preview-svg {
-  display: block;
-}
-
-.game-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.game-over-box {
-  background: var(--bg-card);
-  border-radius: 16px;
-  padding: 32px;
-  text-align: center;
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-lg);
-}
-
-.game-over-box h2 {
-  margin-bottom: 12px;
-  color: var(--text-primary);
-}
-
-.game-over-box p {
-  margin-bottom: 24px;
-  color: var(--text-secondary);
-}
-
-.game-over-box p.game-over-best {
-  margin-bottom: 24px;
-  margin-top: -12px;
-  font-size: 0.95em;
-  color: var(--text-secondary);
-}
-
-.game-over-buttons {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.game-over-buttons button {
-  padding: 12px 24px;
-  border-radius: 10px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.game-over-buttons button:first-child {
-  background: var(--gradient-primary);
-  color: #fff;
-}
-
-.game-over-buttons button:last-child {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-}
-
-.game-over-buttons button:hover {
-  opacity: 0.9;
-}
-
-@media (max-width: 640px) {
-  .game-view-16-9 {
-    font-size: clamp(9px, 2.2vw, 14px);
-  }
-
-  .game-block-tray .game-blocks-row {
-    justify-content: center;
-  }
-}
-
-/* 가로/세로 모드 토글 버튼 (ChipPuzzleGame 스타일) */
-.orientation-toggle-button {
-  position: fixed;
-  top: 75px;
-  right: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 8px 12px;
-  background: rgba(102, 126, 234, 0.15);
-  backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
-  border: 2px solid rgba(102, 126, 234, 0.3);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
   z-index: 10000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  min-width: 60px;
-  pointer-events: auto;
-}
-
-.orientation-toggle-button:hover {
-  background: rgba(102, 126, 234, 0.25);
-  border-color: rgba(102, 126, 234, 0.5);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
-}
-
-.orientation-toggle-button:active {
-  transform: translateY(0);
-}
-
-.orientation-toggle-button .orientation-icon {
-  font-size: 20px;
-  line-height: 1;
-}
-
-.orientation-toggle-button .orientation-text {
-  font-size: 11px;
-  font-weight: 600;
-  color: #ffffff;
-  text-align: center;
-  white-space: nowrap;
-}
-
-@media (min-width: 769px) {
-  .orientation-toggle-button {
-    display: none;
-  }
-}
-
-@media (max-width: 768px) {
-  .orientation-toggle-button {
-    top: 75px;
-    right: 10px;
-    display: flex !important;
-    z-index: 10000;
-  }
-
-  .orientation-toggle-button.landscape-mode {
-    top: 75px;
-    left: 10px;
-    right: auto;
-    display: flex !important;
-    z-index: 10000;
-  }
-}
-
-@media (orientation: landscape) and (max-height: 768px) {
-  .orientation-toggle-button {
-    display: flex !important;
-    z-index: 10000;
-  }
-
-  .orientation-toggle-button.landscape-mode {
-    display: flex !important;
-    z-index: 10000;
-  }
+  opacity: 0.8;
+  transform: translate(-50%, -50%);
 }

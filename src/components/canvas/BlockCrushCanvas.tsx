@@ -5,12 +5,20 @@ import React, {
   forwardRef,
   useImperativeHandle,
   memo,
+  useState,
 } from "react";
 import type { GridCell } from "@/types/game";
-import { getCanvasSize } from "@/constants/canvasConfig";
+import { useCanvasOrientation } from "@/contexts/CanvasOrientationContext";
 import { getBlockColor } from "@/constants/blockShapes";
 import { getColorIndexFromCell, getBlockShapeByIndex } from "@/utils/gameLogic";
 import "./BlockCrushCanvas.css";
+
+const ASPECT_RATIO_LANDSCAPE = 16 / 9;
+const ASPECT_RATIO_PORTRAIT = 9 / 16;
+const MAX_WIDTH = 1200;
+const MIN_WIDTH = 280;
+const MIN_HEIGHT_LANDSCAPE = Math.floor(MIN_WIDTH / ASPECT_RATIO_LANDSCAPE);
+const MIN_HEIGHT_PORTRAIT = Math.floor(MIN_WIDTH / ASPECT_RATIO_PORTRAIT);
 
 export interface BlockCrushCanvasHandle {
   getCellFromPoint: (
@@ -50,8 +58,6 @@ interface BlockCrushCanvasProps extends BlockCrushCanvasUIProps {
   onCellClick?: (row: number, col: number) => void;
   preview?: PreviewBlock | null;
   onLayout?: (layout: { cellSize: number }) => void;
-  /** 가로 모드: 부모가 rotate(90deg)라서 클릭 좌표를 캔버스 좌표로 변환해야 함 */
-  isLandscapeMode?: boolean;
 }
 
 /** 캔버스 좌표 기준 레이아웃 (draw·클릭·getCellFromPoint 공용) */
@@ -134,16 +140,23 @@ const BlockCrushCanvas = forwardRef<
       onBlockTrayClick,
       onBlockTrayPointerDown,
       onLayout,
-      isLandscapeMode = false,
     },
     ref,
   ) => {
+    const { orientation } = useCanvasOrientation();
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const layoutRef = useRef<ReturnType<typeof getLayout> | null>(null);
-    const isLandscapeModeRef = useRef(isLandscapeMode);
-    isLandscapeModeRef.current = isLandscapeMode;
     const gridSize = grid.length;
+    const aspectRatio =
+      orientation === "landscape"
+        ? ASPECT_RATIO_LANDSCAPE
+        : ASPECT_RATIO_PORTRAIT;
+    const minHeight =
+      orientation === "landscape"
+        ? MIN_HEIGHT_LANDSCAPE
+        : MIN_HEIGHT_PORTRAIT;
+    const [size, setSize] = useState({ w: MIN_WIDTH, h: minHeight });
 
     useImperativeHandle(
       ref,
@@ -152,17 +165,16 @@ const BlockCrushCanvas = forwardRef<
           const canvas = canvasRef.current;
           if (!canvas || !layoutRef.current) return null;
           const rect = canvas.getBoundingClientRect();
+          const w = rect.width;
+          const h = rect.height;
+          if (w <= 0 || h <= 0) return null;
           let px = clientX - rect.left;
           let py = clientY - rect.top;
-          if (isLandscapeModeRef.current) {
-            const W = parseInt(canvas.style.width || "0", 10);
-            const H = parseInt(canvas.style.height || "0", 10);
-            if (W && H) {
-              const aabbX = clientX - rect.left;
-              const aabbY = clientY - rect.top;
-              px = aabbY;
-              py = H - aabbX;
-            }
+          // 세로 모드일 때는 좌표 변환 (Canvas가 90도 회전되어 있음)
+          if (orientation === "portrait") {
+            const tempX = px;
+            px = py;
+            py = w - tempX;
           }
           const L = layoutRef.current;
           const col = Math.floor((px - L.offsetX) / L.cellSize);
@@ -175,15 +187,27 @@ const BlockCrushCanvas = forwardRef<
           return layoutRef.current?.cellSize ?? 24;
         },
       }),
-      [],
+      [orientation],
     );
 
     const draw = useCallback(
       (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+        // 세로 모드일 때는 가로/세로를 스왑하여 계산
+        const effectiveW = orientation === "portrait" ? height : width;
+        const effectiveH = orientation === "portrait" ? width : height;
+        
         const blockCount = Math.max(1, currentBlockIndices.length);
-        const L = getLayout(width, height, gridSize, blockCount);
+        const L = getLayout(effectiveW, effectiveH, gridSize, blockCount);
         layoutRef.current = L;
         onLayout?.({ cellSize: L.cellSize });
+        
+        // 세로 모드일 때는 Canvas를 90도 회전하여 그리기
+        if (orientation === "portrait") {
+          ctx.save();
+          ctx.translate(width / 2, height / 2);
+          ctx.rotate(Math.PI / 2);
+          ctx.translate(-height / 2, -width / 2);
+        }
 
         const {
           padding,
@@ -200,7 +224,7 @@ const BlockCrushCanvas = forwardRef<
           getComputedStyle(document.documentElement)
             .getPropertyValue("--canvas-bg")
             .trim() || "#1a1a1a";
-        ctx.fillRect(0, 0, width, height);
+        ctx.fillRect(0, 0, effectiveW, effectiveH);
 
         const isLight =
           document.documentElement.getAttribute("data-theme") === "light";
@@ -376,6 +400,10 @@ const BlockCrushCanvas = forwardRef<
           }
           ctx.globalAlpha = 1;
         }
+        
+        if (orientation === "portrait") {
+          ctx.restore();
+        }
       },
       [
         grid,
@@ -390,6 +418,7 @@ const BlockCrushCanvas = forwardRef<
         currentBlockIndices,
         selectedIndex,
         onLayout,
+        orientation,
       ],
     );
 
@@ -397,60 +426,58 @@ const BlockCrushCanvas = forwardRef<
       const container = containerRef.current;
       const canvas = canvasRef.current;
       if (!container || !canvas) return;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+
       const updateSize = () => {
-        // 컨테이너의 실제 크기 가져오기
-        let w = container.clientWidth;
-        let h = container.clientHeight;
-        
-        // 가로 모드에서 컨테이너 크기가 0이거나 비정상적인 경우, 실제 화면 크기 사용
-        if (isLandscapeMode && (w === 0 || h === 0 || w > h * 3)) {
-          // rotate(90deg)가 적용된 경우, 실제 가용 공간 계산
-          if (typeof window !== "undefined") {
-            // 가로 모드: 화면 높이가 실제 가용 너비, 화면 너비가 실제 가용 높이
-            // 하지만 CSS에서 이미 회전이 적용되어 있으므로, 컨테이너의 부모 크기 확인
-            const parent = container.parentElement;
-            if (parent) {
-              const parentRect = parent.getBoundingClientRect();
-              w = parentRect.width || window.innerWidth;
-              h = parentRect.height || window.innerHeight;
-            } else {
-              w = window.innerHeight;
-              h = window.innerWidth;
-            }
+        // CSS aspect-ratio가 적용된 컨테이너의 실제 크기 사용
+        const cw = Math.max(container.clientWidth || 0, MIN_WIDTH);
+        const ch = Math.max(container.clientHeight || 0, minHeight);
+
+        // 선택된 비율 강제 유지
+        const maxW = Math.min(cw, MAX_WIDTH);
+        const idealH = maxW / aspectRatio;
+        let w = maxW;
+        let h = idealH;
+
+        // 높이가 제한되면 너비를 비율에 맞춤
+        if (ch < idealH) {
+          h = ch;
+          w = h * aspectRatio;
+          // 너비가 컨테이너를 넘지 않도록
+          if (w > cw) {
+            w = cw;
+            h = w / aspectRatio;
           }
         }
-        
-        // 최소 크기 보장
-        w = Math.max(w, 200);
-        h = Math.max(h, 112); // 200 * 9/16
-        
-        const { width, height } = getCanvasSize(w, h, isLandscapeMode);
-        const dpr = window.devicePixelRatio || 1;
-        canvas.width = width * dpr;
-        canvas.height = height * dpr;
-        canvas.style.width = `${width}px`;
-        canvas.style.height = `${height}px`;
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.scale(dpr, dpr);
-        draw(ctx, width, height);
+
+        w = Math.max(MIN_WIDTH, Math.floor(w));
+        h = Math.max(minHeight, Math.floor(h));
+        setSize({ w, h });
       };
+
       updateSize();
       const ro = new ResizeObserver(updateSize);
       ro.observe(container);
-      // 가로 모드일 때는 window resize도 감지
-      if (isLandscapeMode) {
-        window.addEventListener("resize", updateSize);
-        window.addEventListener("orientationchange", updateSize);
-        return () => {
-          ro.disconnect();
-          window.removeEventListener("resize", updateSize);
-          window.removeEventListener("orientationchange", updateSize);
-        };
-      }
       return () => ro.disconnect();
-    }, [draw, isLandscapeMode]);
+    }, [aspectRatio, minHeight]);
+
+    useEffect(() => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const baseDpr = window.devicePixelRatio || 1;
+      const dpr = baseDpr;
+      canvas.width = size.w * dpr;
+      canvas.height = size.h * dpr;
+      canvas.style.width = `${size.w}px`;
+      canvas.style.height = `${size.h}px`;
+
+      const ctx = canvas.getContext("2d", {
+        alpha: true,
+        willReadFrequently: false,
+      });
+      if (!ctx) return;
+      ctx.scale(dpr, dpr);
+      draw(ctx, size.w, size.h);
+    }, [size, draw]);
 
     useEffect(() => {
       const canvas = canvasRef.current;
@@ -462,24 +489,26 @@ const BlockCrushCanvas = forwardRef<
       if (w && h) draw(ctx, w, h);
     }, [grid, draw]);
 
-    /** 뷰포트 클릭 → 캔버스 그리기 좌표. 가로 모드(부모 rotate 90deg CW)일 때 AABB→캔버스 역회전 변환 */
+    /** 뷰포트 클릭 → 캔버스 그리기 좌표. 세로 모드일 때 좌표 변환 */
     const getCanvasPoint = useCallback(
       (clientX: number, clientY: number) => {
         const canvas = canvasRef.current;
         if (!canvas) return null;
         const rect = canvas.getBoundingClientRect();
-        const aabbX = clientX - rect.left;
-        const aabbY = clientY - rect.top;
-        if (!isLandscapeMode) return { px: aabbX, py: aabbY };
-        const W = parseInt(canvas.style.width || "0", 10);
-        const H = parseInt(canvas.style.height || "0", 10);
-        if (!W || !H) return { px: aabbX, py: aabbY };
-        // AABB에서 캔버스 논리: (0,0)=좌상, (H,0)=우상, (H,W)=우하, (0,W)=좌하 → cx=aabbY, cy=H-aabbX
-        const cx = aabbY;
-        const cy = H - aabbX;
-        return { px: cx, py: cy };
+        const w = rect.width;
+        const h = rect.height;
+        if (w <= 0 || h <= 0) return null;
+        let px = clientX - rect.left;
+        let py = clientY - rect.top;
+        // 세로 모드일 때는 좌표를 회전 변환
+        if (orientation === "portrait") {
+          const tempX = px;
+          px = py;
+          py = w - tempX;
+        }
+        return { px, py };
       },
-      [isLandscapeMode],
+      [orientation],
     );
 
     const handlePointerDown = useCallback(
@@ -496,7 +525,12 @@ const BlockCrushCanvas = forwardRef<
             pt.py >= r.y &&
             pt.py <= r.y + r.h,
         );
-        if (idx >= 0) onBlockTrayPointerDown(idx, clientX, clientY);
+        // 변환된 Canvas 좌표를 사용하여 드래그 시작 (세로 모드에서도 정확한 좌표 전달)
+        if (idx >= 0) {
+          // Canvas의 실제 bounding rect를 사용하여 원래 clientX, clientY 전달
+          // getCellFromPoint에서 자체적으로 좌표 변환을 처리하므로 원본 좌표 전달
+          onBlockTrayPointerDown(idx, clientX, clientY);
+        }
       },
       [getCanvasPoint, onBlockTrayPointerDown],
     );
@@ -578,10 +612,14 @@ const BlockCrushCanvas = forwardRef<
     );
 
     return (
-      <div ref={containerRef} className="block-crush-canvas-wrap">
+      <div
+        ref={containerRef}
+        className="game-canvas-wrapper"
+        data-orientation={orientation}
+      >
         <canvas
           ref={canvasRef}
-          className="block-crush-canvas"
+          className="game-canvas"
           onClick={handleClick}
           onMouseDown={handlePointerDown}
           onTouchStart={(e) => {

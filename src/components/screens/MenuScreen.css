@@ -1,109 +1,45 @@
 .menu-screen {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 12px;
-  position: relative;
   height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-}
-
-/* 모바일 가로 모드: 패딩 최소화하여 스크롤 없이 보이도록 */
-@media (orientation: landscape) and (max-height: 560px) {
-  .menu-screen {
-    padding: 4px;
-  }
-}
-
-/* 메뉴 콘텐츠 컨테이너 (가로/세로 모드 회전용) */
-.menu-content-container {
-  width: 100%;
-  transition: transform 0.3s ease;
-  position: relative;
-}
-
-/* 모바일에서 가로 모드일 때 메뉴 콘텐츠 회전 및 화면 중앙 정렬 */
-@media (max-width: 768px) {
-  .menu-content-container.landscape-mode {
-    transform: rotate(90deg);
-    width: 100vh;
-    height: 100vw;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    margin-top: -50vw;
-    margin-left: -50vh;
-    transform-origin: center center;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .menu-content-container.landscape-mode .menu-content-16-9 {
-    height: 100%;
-    width: auto;
-    max-width: 100%;
-    aspect-ratio: 16 / 9;
-    margin: 0;
-    flex-shrink: 0;
-  }
-}
-
-/* 16:9 비율 메뉴 콘텐츠 영역 (게임 Canvas와 동일한 구조) */
-.menu-content-16-9 {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  max-width: min(90vw, 1200px);
-  margin: 0 auto;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-  position: relative;
-  /* 패딩 제거: Canvas가 부모를 꽉 채우도록 */
-}
-
-/* iOS 앱 설치 안내 오버레이 */
-.menu-ios-install-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  padding: 20px;
+  padding: clamp(12px, 2.5vmin, 24px);
+  padding-left: max(clamp(12px, 2.5vmin, 24px), env(safe-area-inset-left));
+  padding-right: max(clamp(12px, 2.5vmin, 24px), env(safe-area-inset-right));
+  padding-bottom: max(clamp(12px, 2.5vmin, 24px), env(safe-area-inset-bottom));
+  position: relative;
 }
 
-.menu-ios-install-box {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 24px;
-  max-width: 340px;
-  box-shadow: var(--shadow-lg);
+@media (max-height: 560px) {
+  .menu-screen {
+    padding: 6px;
+    justify-content: flex-start;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .menu-screen .menu-board {
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    flex: 1;
+  }
 }
 
-.menu-ios-install-text {
-  color: var(--text-primary);
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin: 0 0 20px 0;
-}
-
-.menu-ios-install-close {
-  display: block;
+.menu-board {
   width: 100%;
-  padding: 12px;
-  background: var(--gradient-primary);
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
+  min-width: 280px;
+  max-width: min(1200px, 94vw);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
 }
 
-/* 가로/세로 모드 토글 버튼은 GameScreen.css의 .orientation-toggle-button 사용 */
+@media (max-height: 560px) {
+  .menu-board {
+    align-items: center;
+  }
+}

@@ -1,21 +1,27 @@
+@import "./themes.css";
+
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  height: 100dvh;
-  width: 100vw;
-  overflow: hidden;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-  color: var(--text-primary);
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   background: var(--bg-primary);
+  background-image: var(--gradient-glow);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
 }
 
 .app-container {
@@ -24,127 +30,110 @@ body,
   height: 100vh;
   height: 100dvh;
   width: 100vw;
-  overflow: hidden;
   position: relative;
+  overflow: hidden;
 }
 
-.app-container main {
-  flex: 1;
-  padding: 1rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gradient-primary);
+  border-radius: 4px;
 }
 
-/* Lazy 로딩 중 화면 전환 시 최소 높이 유지 */
-.app-screen-fallback {
-  min-height: 200px;
+.error-boundary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 24px;
+  padding: 40px;
+  background: var(--bg-primary);
+}
+.error-boundary h2 {
+  color: var(--accent-danger);
+  font-size: 1.5rem;
+}
+.error-boundary button {
+  padding: 12px 24px;
+  background: var(--gradient-primary);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.ui-toggle-button {
+  position: fixed;
+  z-index: 1000;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: var(--bg-card);
+  cursor: pointer;
+  font-size: 1.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-tertiary);
-  font-size: 0.9rem;
+  box-shadow: var(--shadow-md);
+  bottom: 80px;
+  right: 16px;
 }
 
-/* 모바일: 메뉴·푸터 숨김 시 헤더/푸터 비표시 */
-.app-container.menu-footer-hidden .header,
-.app-container.menu-footer-hidden .footer {
-  display: none !important;
+.orientation-lock-fixed {
+  position: fixed !important;
+  top: 64px;
+  left: 16px;
+  z-index: 1000;
+  width: auto;
+  height: auto;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
 }
 
-/* 메뉴 숨김 시 GameContainer가 전체 화면 사용 */
-.app-container.menu-footer-hidden .game-container {
-  height: 100vh;
-  height: 100dvh;
-  padding: 0;
+.screen-orientation-lock-fixed {
+  position: fixed !important;
+  bottom: 80px;
+  left: 16px;
+  z-index: 1000;
+  width: auto;
+  height: auto;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
 }
 
-/* 모바일 전용: 메뉴·푸터 숨기기/보기 토글 버튼 */
-.menu-footer-toggle {
-  display: none;
+/* UI 숨김 시 가로/세로 버튼은 상단에 유지 */
+.app-container[data-ui-hidden="true"] .orientation-lock-fixed {
+  top: 16px;
 }
 
-/* 모바일 세로 모드: 너비 768px 이하 */
-@media (max-width: 768px) {
-  .app-container main {
-    padding: 0.5rem;
-  }
-
-  .menu-footer-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    bottom: 16px;
-    right: 16px;
-    z-index: 9998;
-    width: 48px;
-    height: 48px;
-    padding: 0;
-    border: 2px solid rgba(102, 126, 234, 0.4);
-    border-radius: 12px;
-    background: rgba(102, 126, 234, 0.2);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    color: var(--text-primary);
-    font-size: 20px;
-    cursor: pointer;
-    transition:
-      background 0.2s,
-      transform 0.2s;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  }
-
-  .menu-footer-toggle:hover {
-    background: rgba(102, 126, 234, 0.35);
-    transform: scale(1.05);
-  }
-
-  .menu-footer-toggle:active {
-    transform: scale(0.98);
-  }
+.app-container[data-ui-hidden="true"] .screen-orientation-lock-fixed {
+  bottom: 80px;
 }
 
-/* 모바일 가로 모드: 높이 768px 이하 (물리적으로 가로로 돌렸을 때) */
-@media (max-height: 768px) and (orientation: landscape) {
-  .menu-footer-toggle {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    bottom: 12px;
-    right: 12px;
-    z-index: 9998;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 2px solid rgba(102, 126, 234, 0.4);
-    border-radius: 12px;
-    background: rgba(102, 126, 234, 0.2);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    color: var(--text-primary);
-    font-size: 18px;
-    cursor: pointer;
-    transition:
-      background 0.2s,
-      transform 0.2s;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+/* 모바일 가로 모드에서 버튼 위치 조정 */
+@media (max-height: 560px) {
+  .orientation-lock-fixed {
+    top: 48px;
   }
-
-  .menu-footer-toggle:hover {
-    background: rgba(102, 126, 234, 0.35);
-    transform: scale(1.05);
+  .screen-orientation-lock-fixed {
+    bottom: 60px;
   }
-
-  .menu-footer-toggle:active {
-    transform: scale(0.98);
+  .app-container[data-ui-hidden="true"] .orientation-lock-fixed {
+    top: 12px;
   }
-}
-
-/* 데스크톱(너비 769px 이상, 높이 769px 이상)에서만 숨김 */
-@media (min-width: 769px) and (min-height: 769px) {
-  .menu-footer-toggle {
-    display: none !important;
+  .app-container[data-ui-hidden="true"] .screen-orientation-lock-fixed {
+    bottom: 60px;
   }
 }

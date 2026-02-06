@@ -16,6 +16,7 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCanvasOrientation } from "@/contexts/CanvasOrientationContext";
 import BlockCrushCanvas, {
   type BlockCrushCanvasHandle,
   type PreviewBlock,
@@ -45,13 +46,12 @@ interface GameScreenProps {
   onBack: () => void;
 }
 
-/** localStorage에 가로 모드 여부 저장할 때 사용하는 키 (접두어 제외) */
-const LANDSCAPE_MODE_KEY = "landscapeMode";
 /** localStorage에 최고 점수 저장할 때 사용하는 키 */
 const HIGH_SCORE_KEY = "highScore";
 
 const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
   const { t } = useLanguage();
+  const { orientation } = useCanvasOrientation();
 
   // ---- 캔버스 ref (드래그 시 셀 좌표·셀 크기 조회용) ----
   const canvasRef = useRef<BlockCrushCanvasHandle>(null);
@@ -81,26 +81,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
   /** 다음에 배치할 블록에 부여할 고유 ID (placeBlock 시 사용) */
   const [blockIdCounter, setBlockIdCounter] = useState(1);
 
-  // ---- 가로/세로 모드·모바일 감지 ----
-  /** 가로 모드 여부. localStorage에 저장해 재방문 시 복원 */
-  const [isLandscapeMode, setIsLandscapeMode] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    const saved = storageManager.get<boolean>(LANDSCAPE_MODE_KEY, {
-      fallback: false,
-      silent: true,
-    });
-    return saved ?? false;
-  });
-  /** 모바일 여부 (768px 이하 또는 터치 지원). 가로/세로 토글 버튼 표시 여부에 사용 */
-  const [isMobile, setIsMobile] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return (
-      window.innerWidth <= 768 ||
-      window.innerHeight <= 768 ||
-      "ontouchstart" in window ||
-      navigator.maxTouchPoints > 0
-    );
-  });
 
   // ---- 드래그 관련 상태 ----
   /** 드래그 시작 시점: 포인터 위치 + 어떤 블록(index/shapeIdx/shape) */
@@ -162,31 +142,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
     addNewBlocks();
   }, [addNewBlocks]);
 
-  /** 가로/세로 모드 토글. localStorage에 저장해 다음 방문 시 복원 */
-  const toggleOrientationMode = useCallback(() => {
-    const newMode = !isLandscapeMode;
-    setIsLandscapeMode(newMode);
-    storageManager.set(LANDSCAPE_MODE_KEY, newMode, { silent: true });
-  }, [isLandscapeMode]);
 
-  /** 리사이즈·회전 시 모바일 여부 갱신 (가로/세로 토글 버튼 표시용) */
-  useEffect(() => {
-    const handleResize = () => {
-      if (typeof window === "undefined") return;
-      setIsMobile(
-        window.innerWidth <= 768 ||
-          window.innerHeight <= 768 ||
-          "ontouchstart" in window ||
-          navigator.maxTouchPoints > 0,
-      );
-    };
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("orientationchange", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("orientationchange", handleResize);
-    };
-  }, []);
 
   /** 그리드·현재 블록이 바뀔 때마다, 3개 중 하나라도 놓을 수 있는지 검사 → 없으면 게임 오버 */
   useEffect(() => {
@@ -366,8 +322,13 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
 
     const onMouseMove = (e: MouseEvent) => onMove(e.clientX, e.clientY);
     const onTouchMove = (e: TouchEvent) => {
-      e.preventDefault();
-      onMove(e.touches[0].clientX, e.touches[0].clientY);
+      // 이벤트가 취소 가능한 경우에만 preventDefault 호출
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+      if (e.touches.length > 0) {
+        onMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
     };
 
     const onEnd = (releaseClientX?: number, releaseClientY?: number) => {
@@ -477,12 +438,8 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
 
   return (
     <div className="game-screen">
-      {/* 가로 모드 시 rotate(90deg)로 전체 게임 영역 회전, 모바일에서만 */}
-      <div
-        className={`game-board-container ${isMobile && isLandscapeMode ? "landscape-mode" : ""}`}
-      >
-        <div className={`game-area ${isGameOver ? "game-over" : ""}`}>
-          <div className="game-view-16-9">
+      <div className={`game-area ${isGameOver ? "game-over" : ""}`}>
+        <div className="game-board">
             {/* 그리드·메뉴·점수·블록트레이를 모두 캔버스에 그리며, 클릭/드래그는 여기서 처리 */}
             <BlockCrushCanvas
               ref={canvasRef}
@@ -501,47 +458,23 @@ const GameScreen: React.FC<GameScreenProps> = ({ stageNumber, onBack }) => {
               selectedIndex={selectedIndex}
               onBlockTrayClick={handleBlockTrayClick}
               onBlockTrayPointerDown={handleBlockTrayPointerDown}
-              isLandscapeMode={isMobile ? isLandscapeMode : false}
             />
-          </div>
         </div>
       </div>
 
-      {/* 모바일에서만: 가로/세로 모드 토글 버튼 (고정 위치) */}
-      {isMobile && (
-        <button
-          type="button"
-          className={`orientation-toggle-button ${isLandscapeMode ? "landscape-mode" : ""}`}
-          onClick={toggleOrientationMode}
-          aria-label={
-            isLandscapeMode
-              ? t("game.switchToPortrait")
-              : t("game.switchToLandscape")
-          }
-          title={
-            isLandscapeMode
-              ? t("game.switchToPortrait")
-              : t("game.switchToLandscape")
-          }
-        >
-          <span className="orientation-icon">
-            {isLandscapeMode ? "📱" : "🔄"}
-          </span>
-          <span className="orientation-text">
-            {isLandscapeMode ? t("game.portraitMode") : t("game.landscapeMode")}
-          </span>
-        </button>
-      )}
-
-      {/* 드래그 중: 커서를 따라다니는 블록 고스트. body 포탈로 회전 컨테이너 영향 제거, 가로 모드 시 역회전으로 블록 방향 맞춤 */}
-      {dragging &&
-        dragPos &&
-        typeof document !== "undefined" &&
+      {/* 드래그 중: 커서를 따라다니는 블록 고스트. body 포탈로 회전 컨테이너 영향 제거, 세로 모드 시 캔버스와 동일한 방향으로 회전 */}
+      {dragging && dragPos && typeof document !== "undefined" &&
         createPortal(
           <div
             ref={ghostRef}
-            className={`game-drag-ghost ${isMobile && isLandscapeMode ? "landscape-mode" : ""}`}
-            style={{ left: dragPos.x, top: dragPos.y }}
+            className="game-drag-ghost"
+            style={{
+              left: dragPos.x,
+              top: dragPos.y,
+              transform: orientation === "portrait" 
+                ? "translate(-50%, -50%) rotate(90deg)" 
+                : "translate(-50%, -50%)",
+            }}
             aria-hidden
           >
             <BlockPreview

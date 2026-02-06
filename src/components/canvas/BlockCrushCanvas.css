@@ -1,31 +1,74 @@
-.block-crush-canvas-wrap {
-  position: relative;
+.game-canvas-wrapper {
   width: 100%;
-  height: 100%;
-  max-width: min(90vw, 1200px);
+  min-width: 280px;
+  max-width: min(1200px, 94vw);
   aspect-ratio: 16 / 9;
+  max-height: min(88vh, 100%);
+  flex-shrink: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
+  background: var(--canvas-bg);
+  border-radius: clamp(10px, 2vmin, 14px);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.08);
+  position: relative;
 }
 
-/* game-view-16-9 안에서는 wrap이 부모를 꽉 채우도록 (GameScreen.css에서도 설정) */
-.game-view-16-9 .block-crush-canvas-wrap {
-  max-width: none;
-  aspect-ratio: none;
+/* Canvas 방향에 따른 aspect-ratio 변경 */
+.game-canvas-wrapper[data-orientation="landscape"] {
+  aspect-ratio: 16 / 9;
 }
 
-.block-crush-canvas {
+.game-canvas-wrapper[data-orientation="portrait"] {
+  aspect-ratio: 9 / 16;
+}
+
+/* 모바일 가로: 높이 제한 시 높이 기준으로 비율 유지, 스크롤 방지 */
+@media (max-height: 560px) {
+  .game-canvas-wrapper {
+    width: auto;
+    height: min(65vh, 100%);
+    max-height: 100%;
+    max-width: min(1200px, 94vw);
+    min-width: 280px;
+    min-height: 0;
+    flex-shrink: 0;
+  }
+  .game-canvas-wrapper[data-orientation="landscape"] {
+    aspect-ratio: 16 / 9;
+  }
+  .game-canvas-wrapper[data-orientation="portrait"] {
+    aspect-ratio: 9 / 16;
+  }
+}
+
+/* 메뉴 숨김 시: 가용 공간을 16:9 비율에 맞춰 꽉 채움 */
+@media (max-height: 560px) {
+  .app-container[data-ui-hidden="true"] .game-canvas-wrapper {
+    height: min(95dvh, 95vh, 100%);
+    max-height: min(95dvh, 95vh, 100%);
+  }
+}
+
+@media (min-width: 768px) {
+  .game-canvas-wrapper {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.game-canvas {
+  display: block;
   width: 100%;
   height: 100%;
-  display: block;
-  border-radius: 12px;
-  box-shadow: var(--shadow-md);
+  max-width: 100%;
+  max-height: 100%;
   cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
 }
 
-.block-crush-canvas:focus {
+.game-canvas:focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }

@@ -1,59 +1,27 @@
 .game-container {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--bg-primary);
+  padding: 16px;
   overflow: auto;
   min-height: 0;
-  padding: 12px;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* 모바일 가로 모드: 스크롤 없이 메뉴, canvas, 푸터가 모두 보이도록 */
-@media (orientation: landscape) and (max-height: 768px) {
+/* 모바일 가로: 자식이 가용 높이만 쓰도록 해 스크롤 제거 */
+@media (max-height: 560px) {
   .game-container {
-    padding: 4px;
-    overflow: hidden;
+    padding: 8px;
     justify-content: flex-start;
+    overflow: hidden;
   }
-  
   .game-container > * {
     flex: 1;
     min-height: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-  }
-  
-  /* 메뉴 숨김 시 가로 모드에서 패딩 제거하고 전체 화면 사용 */
-  .app-container.menu-footer-hidden .game-container {
-    padding: 0;
-    height: 100vh;
-    height: 100dvh;
-  }
-}
-
-@media (max-width: 768px) {
-  .game-container {
-    padding: 8px;
-  }
-  
-  /* 모바일 가로 모드: 스크롤 없이 메뉴, canvas, 푸터가 모두 보이도록 */
-  @media (orientation: landscape) and (max-height: 560px) {
-    .game-container {
-      padding: 4px;
-      overflow: hidden;
-      justify-content: flex-start;
-    }
-    
-    .game-container > * {
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
   }
 }

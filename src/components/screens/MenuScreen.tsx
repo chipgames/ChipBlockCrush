@@ -13,58 +13,11 @@ interface MenuScreenProps {
   onStartGame: () => void;
 }
 
-const LANDSCAPE_MODE_KEY = "landscapeMode";
-
 const MenuScreen: React.FC<MenuScreenProps> = ({ onNavigate, onStartGame }) => {
   const { t } = useLanguage();
   const { canInstall, isIOS, isStandalone, promptInstall } = usePWAInstall();
   const [showInstallHint, setShowInstallHint] = useState(false);
   const [hintType, setHintType] = useState<"ios" | "fallback" | null>(null);
-
-  // 모바일 감지 및 가로 모드 상태
-  const [isMobile, setIsMobile] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return (
-      window.innerWidth <= 768 ||
-      window.innerHeight <= 768 ||
-      "ontouchstart" in window ||
-      navigator.maxTouchPoints > 0
-    );
-  });
-  const [isLandscapeMode, setIsLandscapeMode] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    const saved = storageManager.get<boolean>(LANDSCAPE_MODE_KEY, {
-      fallback: false,
-      silent: true,
-    });
-    return saved ?? false;
-  });
-
-  // 리사이즈·회전 시 모바일 여부 갱신
-  useEffect(() => {
-    const handleResize = () => {
-      if (typeof window === "undefined") return;
-      setIsMobile(
-        window.innerWidth <= 768 ||
-          window.innerHeight <= 768 ||
-          "ontouchstart" in window ||
-          navigator.maxTouchPoints > 0,
-      );
-    };
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("orientationchange", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("orientationchange", handleResize);
-    };
-  }, []);
-
-  // 가로/세로 모드 토글
-  const toggleOrientationMode = () => {
-    const newMode = !isLandscapeMode;
-    setIsLandscapeMode(newMode);
-    storageManager.set(LANDSCAPE_MODE_KEY, newMode, { silent: true });
-  };
 
   const showDownload = !isStandalone;
   const handleDownload = async () => {
@@ -136,47 +89,15 @@ const MenuScreen: React.FC<MenuScreenProps> = ({ onNavigate, onStartGame }) => {
 
   return (
     <div className="menu-screen">
-      {/* 가로 모드 시 rotate(90deg)로 전체 메뉴 영역 회전, 모바일에서만 */}
-      <div
-        className={`menu-content-container ${isMobile && isLandscapeMode ? "landscape-mode" : ""}`}
-      >
-        <div className="menu-content-16-9">
-          <MenuCanvas
-            logoImageSrc={`${import.meta.env.BASE_URL}ChipGames_Logo.png`}
-            title={t("header.gameTitle")}
-            subtitle={t("menu.subtitle")}
-            buttons={menuButtons}
-            onButtonClick={handleButtonClick}
-            isLandscapeMode={isMobile ? isLandscapeMode : false}
-          />
-        </div>
+      <div className="menu-board">
+        <MenuCanvas
+          logoImageSrc={`${import.meta.env.BASE_URL}ChipGames_Logo.png`}
+          title={t("header.gameTitle")}
+          subtitle={t("menu.subtitle")}
+          buttons={menuButtons}
+          onButtonClick={handleButtonClick}
+        />
       </div>
-
-      {/* 모바일에서만: 가로/세로 모드 토글 버튼 (게임 화면과 동일) */}
-      {isMobile && (
-        <button
-          type="button"
-          className={`orientation-toggle-button ${isLandscapeMode ? "landscape-mode" : ""}`}
-          onClick={toggleOrientationMode}
-          aria-label={
-            isLandscapeMode
-              ? t("game.switchToPortrait")
-              : t("game.switchToLandscape")
-          }
-          title={
-            isLandscapeMode
-              ? t("game.switchToPortrait")
-              : t("game.switchToLandscape")
-          }
-        >
-          <span className="orientation-icon">
-            {isLandscapeMode ? "📱" : "🔄"}
-          </span>
-          <span className="orientation-text">
-            {isLandscapeMode ? t("game.portraitMode") : t("game.landscapeMode")}
-          </span>
-        </button>
-      )}
       {showInstallHint && hintType && (
         <div
           className="menu-ios-install-overlay"
