@@ -158,3 +158,102 @@
   opacity: 0.8;
   transform: translate(-50%, -50%);
 }
+
+/* 게임 오버 오버레이 */
+.game-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  animation: gameOverFadeIn 0.3s ease-out;
+}
+
+@keyframes gameOverFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.game-over-box {
+  background: var(--bg-card, #ffffff);
+  border-radius: 16px;
+  padding: clamp(24px, 5vmin, 32px);
+  max-width: min(90vw, 500px);
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(16px, 3vmin, 20px);
+  animation: gameOverBoxPop 0.4s ease-out 0.1s both;
+}
+
+@keyframes gameOverBoxPop {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.game-over-box h2 {
+  font-size: clamp(1.5rem, 5vmin, 2rem);
+  font-weight: 700;
+  color: var(--text-primary, #000000);
+  margin: 0;
+  text-align: center;
+}
+
+.game-over-box p {
+  font-size: clamp(1rem, 3vmin, 1.25rem);
+  color: var(--text-secondary, #666666);
+  margin: 0;
+  text-align: center;
+}
+
+.game-over-box .game-over-best {
+  font-weight: 600;
+  color: var(--accent-primary, #7c8aff);
+}
+
+.game-over-buttons {
+  display: flex;
+  gap: clamp(12px, 2.5vmin, 16px);
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  margin-top: clamp(8px, 2vmin, 12px);
+}
+
+.game-over-buttons button {
+  padding: clamp(10px, 2vmin, 14px) clamp(20px, 4vmin, 28px);
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #e0e0e0);
+  background: var(--bg-card, #ffffff);
+  color: var(--text-primary, #000000);
+  cursor: pointer;
+  font-size: clamp(0.9rem, 2vmin, 1rem);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.game-over-buttons button:hover {
+  border-color: var(--accent-primary, #7c8aff);
+  box-shadow: 0 2px 12px rgba(124, 138, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.game-over-buttons button:active {
+  transform: translateY(0);
+}
