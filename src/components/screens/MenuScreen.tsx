@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
 import { GameScreen } from "@/types/ui";
-import { storageManager } from "@/utils/storage";
 import MenuCanvas, { type MenuButton } from "@/components/canvas/MenuCanvas";
 import "./MenuScreen.css";
 // 가로/세로 모드 토글 버튼 스타일 공유

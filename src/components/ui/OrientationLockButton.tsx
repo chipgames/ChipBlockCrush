@@ -5,7 +5,7 @@ import "./OrientationLockButton.css";
 
 const OrientationLockButton: React.FC = () => {
   const { t } = useLanguage();
-  const { supported, locked, lockType, unlock, toggleLock } =
+  const { supported, isLocked, lockType, unlock, toggle } =
     useOrientationLock();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -30,15 +30,15 @@ const OrientationLockButton: React.FC = () => {
         className="orientation-lock-btn"
         onClick={() => setOpen((v) => !v)}
         title={
-          locked ? t("header.orientationUnlock") : t("header.orientationLock")
+          isLocked ? t("header.orientationUnlock") : t("header.orientationLock")
         }
         aria-label={
-          locked ? t("header.orientationUnlock") : t("header.orientationLock")
+          isLocked ? t("header.orientationUnlock") : t("header.orientationLock")
         }
         aria-expanded={open}
       >
         <span className="orientation-lock-icon" aria-hidden>
-          {locked ? (lockType === "landscape" ? "↔" : "↕") : "⤢"}
+          {isLocked ? (lockType === "landscape" ? "↔" : "↕") : "⤢"}
         </span>
       </button>
       {open && (
@@ -47,7 +47,7 @@ const OrientationLockButton: React.FC = () => {
             type="button"
             className={lockType === "landscape" ? "active" : ""}
             onClick={() => {
-              toggleLock("landscape");
+              toggle("landscape");
               setOpen(false);
             }}
           >
@@ -57,13 +57,13 @@ const OrientationLockButton: React.FC = () => {
             type="button"
             className={lockType === "portrait" ? "active" : ""}
             onClick={() => {
-              toggleLock("portrait");
+              toggle("portrait");
               setOpen(false);
             }}
           >
             {t("header.orientationPortrait")}
           </button>
-          {locked && (
+          {isLocked && (
             <button
               type="button"
               className="orientation-lock-unlock"

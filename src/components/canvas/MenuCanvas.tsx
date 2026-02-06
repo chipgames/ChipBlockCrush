@@ -102,9 +102,6 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
       // 패딩: 화면 크기에 비례하되 최소값 보장
       const padding = Math.max(8, Math.min(effectiveW * 0.03, effectiveH * 0.03));
       
-      // 예상 요소 높이 계산 (버튼 개수는 나중에 확인)
-      const estimatedLinkButtonCount = 4; // 가이드, 도움말, 게임소개, 다운로드
-      
       // 초기 크기 계산
       let logoHeight = Math.max(40, Math.min(70 * scale, effectiveH * 0.12));
       let titleFontSize = Math.max(18, Math.min(28 * scale, effectiveW * 0.07));
@@ -234,7 +231,7 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
       const effectiveH = orientation === "portrait" ? width : height;
 
       const L = layoutRef.current;
-      const { padding, logoHeight, logoY, fontSize } = L;
+      const { logoHeight, logoY, fontSize } = L;
       
       // 세로 모드일 때는 Canvas를 90도 회전하여 그리기
       if (orientation === "portrait") {
