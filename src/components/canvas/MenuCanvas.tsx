@@ -500,7 +500,6 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
       const { padding, fontSize } = L;
       // draw와 동일한 논리 좌표계 사용 (세로 모드 시 스왑)
       const effectiveW = orientation === "portrait" ? L.height : L.width;
-      const effectiveH = orientation === "portrait" ? L.width : L.height;
       
       // 세로 모드일 때는 좌표 변환 (Canvas가 90도 회전되어 있음)
       let effectivePx = px;
@@ -630,7 +629,6 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
         const { padding, fontSize } = L;
         // draw와 동일한 논리 좌표계 사용 (세로 모드 시 스왑)
         const effectiveW = orientation === "portrait" ? L.height : L.width;
-        const effectiveH = orientation === "portrait" ? L.width : L.height;
         
         // 세로 모드일 때는 좌표 변환 (Canvas가 90도 회전되어 있음)
         let effectivePx = px;
