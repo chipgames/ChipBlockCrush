@@ -95,6 +95,10 @@ const App: React.FC = () => {
   };
 
   const handleBackFromGame = () => {
+    // 모바일 가로 모드: 게임에서 풀스크린 상태로 메뉴 복귀 시 터치가 먹지 않는 현상 방지
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
+    }
     setCurrentScreen("menu");
     setCurrentStage(null);
   };

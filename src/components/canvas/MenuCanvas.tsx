@@ -498,6 +498,9 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
       const L = layoutRef.current;
       if (!L) return;
       const { padding, fontSize } = L;
+      // draw와 동일한 논리 좌표계 사용 (세로 모드 시 스왑)
+      const effectiveW = orientation === "portrait" ? L.height : L.width;
+      const effectiveH = orientation === "portrait" ? L.width : L.height;
       
       // 세로 모드일 때는 좌표 변환 (Canvas가 90도 회전되어 있음)
       let effectivePx = px;
@@ -511,12 +514,12 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
         }
       }
 
-      // Primary 버튼 클릭 체크
+      // Primary 버튼 클릭 체크 (draw와 동일: effectiveW 기준)
       const primaryButton = buttons.find((b) => b.isPrimary);
       if (primaryButton) {
-        const availableWidth = L.width - padding * 2;
+        const availableWidth = effectiveW - padding * 2;
         const buttonW = Math.max(availableWidth * 0.6, Math.min(availableWidth * 0.8, 280));
-        const buttonX = (L.width - buttonW) / 2;
+        const buttonX = (effectiveW - buttonW) / 2;
         const buttonY = L.playButtonY;
         if (
           effectivePx >= buttonX &&
@@ -532,8 +535,8 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
       // 링크 버튼 클릭 체크 (draw 함수와 동일한 계산)
       const linkButtons = buttons.filter((b) => !b.isPrimary);
       if (linkButtons.length > 0) {
-        const availableWidth = L.width - padding * 2;
-        const maxButtonWidth = Math.min(availableWidth / linkButtons.length - L.linkButtonGap, L.width * 0.2);
+        const availableWidth = effectiveW - padding * 2;
+        const maxButtonWidth = Math.min(availableWidth / linkButtons.length - L.linkButtonGap, effectiveW * 0.2);
         const buttonWidths: number[] = [];
         
         linkButtons.forEach((button) => {
@@ -546,7 +549,7 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
         const totalButtonWidth = buttonWidths.reduce((sum, w, i) => {
           return sum + w + (i > 0 ? L.linkButtonGap : 0);
         }, 0);
-        let currentX = (L.width - totalButtonWidth) / 2;
+        let currentX = (effectiveW - totalButtonWidth) / 2;
         
         // 너비 초과 시 간격 조정 (draw 함수와 동일)
         if (currentX < padding) {
@@ -556,7 +559,7 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
           const recalculatedTotalWidth = buttonWidths.reduce((sum, w, i) => {
             return sum + w + (i > 0 ? adjustedGap : 0);
           }, 0);
-          currentX = (L.width - recalculatedTotalWidth) / 2;
+          currentX = (effectiveW - recalculatedTotalWidth) / 2;
           
           // 조정된 간격으로 버튼 위치 재계산
           for (let i = 0; i < linkButtons.length; i++) {
@@ -625,6 +628,9 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
 
         const L = layoutRef.current;
         const { padding, fontSize } = L;
+        // draw와 동일한 논리 좌표계 사용 (세로 모드 시 스왑)
+        const effectiveW = orientation === "portrait" ? L.height : L.width;
+        const effectiveH = orientation === "portrait" ? L.width : L.height;
         
         // 세로 모드일 때는 좌표 변환 (Canvas가 90도 회전되어 있음)
         let effectivePx = px;
@@ -640,9 +646,9 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
 
         const primaryButton = buttons.find((b) => b.isPrimary);
         if (primaryButton) {
-          const availableWidth = L.width - padding * 2;
+          const availableWidth = effectiveW - padding * 2;
           const buttonW = Math.max(availableWidth * 0.6, Math.min(availableWidth * 0.8, 280));
-          const buttonX = (L.width - buttonW) / 2;
+          const buttonX = (effectiveW - buttonW) / 2;
           const buttonY = L.playButtonY;
           if (
             effectivePx >= buttonX &&
@@ -657,8 +663,8 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
 
         const linkButtons = buttons.filter((b) => !b.isPrimary);
         if (linkButtons.length > 0) {
-          const availableWidth = L.width - padding * 2;
-          const maxButtonWidth = Math.min(availableWidth / linkButtons.length - L.linkButtonGap, L.width * 0.2);
+          const availableWidth = effectiveW - padding * 2;
+          const maxButtonWidth = Math.min(availableWidth / linkButtons.length - L.linkButtonGap, effectiveW * 0.2);
           const buttonWidths: number[] = [];
           
           linkButtons.forEach((button) => {
@@ -668,19 +674,19 @@ const MenuCanvas: React.FC<MenuCanvasProps> = ({
             buttonWidths.push(w);
           });
           
-          const totalButtonWidth = buttonWidths.reduce((sum, w, i) => {
-            return sum + w + (i > 0 ? L.linkButtonGap : 0);
-          }, 0);
-          let currentX = (L.width - totalButtonWidth) / 2;
+        const totalButtonWidth = buttonWidths.reduce((sum, w, i) => {
+          return sum + w + (i > 0 ? L.linkButtonGap : 0);
+        }, 0);
+        let currentX = (effectiveW - totalButtonWidth) / 2;
           
-          if (currentX < padding) {
-            const overflow = padding - currentX;
-            const gapReduction = overflow / (linkButtons.length - 1);
-            const adjustedGap = Math.max(4, L.linkButtonGap - gapReduction);
-            const recalculatedTotalWidth = buttonWidths.reduce((sum, w, i) => {
-              return sum + w + (i > 0 ? adjustedGap : 0);
-            }, 0);
-            currentX = (L.width - recalculatedTotalWidth) / 2;
+        if (currentX < padding) {
+          const overflow = padding - currentX;
+          const gapReduction = overflow / (linkButtons.length - 1);
+          const adjustedGap = Math.max(4, L.linkButtonGap - gapReduction);
+          const recalculatedTotalWidth = buttonWidths.reduce((sum, w, i) => {
+            return sum + w + (i > 0 ? adjustedGap : 0);
+          }, 0);
+          currentX = (effectiveW - recalculatedTotalWidth) / 2;
             
             for (let i = 0; i < linkButtons.length; i++) {
               const button = linkButtons[i];
