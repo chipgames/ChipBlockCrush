@@ -4,6 +4,13 @@
   padding: 24px;
 }
 
+/* 모바일: 상단 정렬 후 노치 대응만 (Y정렬은 GameContainer.content-top으로 처리) */
+@media (max-width: 768px) {
+  .help-screen {
+    padding-top: max(24px, env(safe-area-inset-top, 0px) + 8px);
+  }
+}
+
 .help-title {
   font-size: 1.5rem;
   color: var(--text-primary);

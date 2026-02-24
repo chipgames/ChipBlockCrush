@@ -10,6 +10,11 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* 가이드/도움말 등: 세로 가운데 정렬하지 않고 상단부터 배치 (헤더에 가려지지 않도록) */
+.game-container.content-top {
+  justify-content: flex-start;
+}
+
 /* 모바일 가로: 자식이 가용 높이만 쓰도록 해 스크롤 제거 */
 @media (max-height: 560px) {
   .game-container {

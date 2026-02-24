@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { GameScreen } from "@/types/ui";
 import { BLOCK_SHAPES, getBlockColor } from "@/constants/blockShapes";
@@ -52,8 +52,19 @@ function BlockShapePreview({
 
 const GuideScreen: React.FC<GuideScreenProps> = ({ onNavigate }) => {
   const { t } = useLanguage();
+  const screenRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = screenRef.current;
+    if (!el) return;
+    const scrollParent = el.closest(".game-container");
+    if (scrollParent && "scrollTop" in scrollParent) {
+      (scrollParent as HTMLElement).scrollTop = 0;
+    }
+  }, []);
+
   return (
-    <div className="guide-screen" role="main" aria-label={t("guide.title")}>
+    <div ref={screenRef} className="guide-screen" role="main" aria-label={t("guide.title")}>
       <h1 className="guide-title">{t("guide.title")}</h1>
       <p className="guide-description">{t("guide.description")}</p>
       <h2 className="guide-section-title">{t("guide.basicTitle")}</h2>

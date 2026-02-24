@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { GameScreen } from "@/types/ui";
 import "./HelpScreen.css";
@@ -18,8 +18,19 @@ const FAQ_KEYS = [
 
 const HelpScreen: React.FC<HelpScreenProps> = ({ onNavigate }) => {
   const { t } = useLanguage();
+  const screenRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = screenRef.current;
+    if (!el) return;
+    const scrollParent = el.closest(".game-container");
+    if (scrollParent && "scrollTop" in scrollParent) {
+      (scrollParent as HTMLElement).scrollTop = 0;
+    }
+  }, []);
+
   return (
-    <div className="help-screen" role="main" aria-label={t("help.title")}>
+    <div ref={screenRef} className="help-screen" role="main" aria-label={t("help.title")}>
       <h1 className="help-title">{t("help.title")}</h1>
       <p className="help-intro">{t("help.intro")}</p>
       <div className="help-faq">

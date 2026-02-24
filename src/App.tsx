@@ -121,7 +121,11 @@ const App: React.FC = () => {
             currentScreen={currentScreen}
           />
         )}
-        <GameContainer>
+        <GameContainer
+          contentStartsAtTop={["guide", "help", "about", "privacy"].includes(
+            currentScreen
+          )}
+        >
           <React.Suspense
             fallback={
               <div className="app-screen-fallback" aria-live="polite" />
